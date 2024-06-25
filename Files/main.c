@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsoeferr < joseferr@student.42porto.com    +#+  +:+       +#+        */
+/*   By: joseferr < joseferr@student.42porto.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/18 15:25:43 by jsoeferr          #+#    #+#             */
-/*   Updated: 2024/06/18 15:25:43 by jsoeferr         ###   ########.fr       */
+/*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
+/*   Updated: 2024/06/18 15:25:43 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
