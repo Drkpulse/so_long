@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 15:35:19 by joseferr          #+#    #+#             */
-/*   Updated: 2023/10/31 15:44:07 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/06/28 17:48:56 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
+# include <fcntl.h>
+
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 42
+#endif
 
 //LIBC FUNCTIONS//
 int		ft_atoi(const char *str);
@@ -43,6 +48,7 @@ int		ft_tolower(int c);
 int		ft_toupper(int c);
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strdup(const char *src);
+int		ft_strcmp(char *s1, char *s2);
 
 //NON LIBC FUNCTIONS//
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -62,6 +68,7 @@ typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
+	struct s_list	*previous;
 }	t_list;
 
 t_list	*ft_lstnew(void *content);
@@ -73,5 +80,9 @@ void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+
+//GNL //
+
+char	*get_next_line(int fd);
 
 #endif
