@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/06/29 23:43:31 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:17:59 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,8 +446,6 @@ int	main(int argc, char **argv)
 {
 	t_game	game;
 
-	(void)argv;
-	(void)argc;
 	ft_ready_game(&game);
 	ft_init_map(argc, argv, &game);
 	hook_register(&game);

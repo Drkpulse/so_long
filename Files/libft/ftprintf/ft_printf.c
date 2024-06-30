@@ -6,11 +6,11 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 15:10:55 by joseferr          #+#    #+#             */
-/*   Updated: 2023/11/07 19:03:26 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:17:01 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "../libft.h"
 
 void	ft_put(char c, char *str, t_info *data, int flag)
 {

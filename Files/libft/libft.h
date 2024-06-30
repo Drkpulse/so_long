@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 15:35:19 by joseferr          #+#    #+#             */
-/*   Updated: 2024/06/28 17:48:56 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:16:27 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <fcntl.h>
+# include <stdarg.h>
+# include <limits.h>
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
@@ -84,5 +86,18 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 //GNL //
 
 char	*get_next_line(int fd);
+
+//FT_PRINTF //
+
+typedef struct s_print
+{
+	size_t			count;
+	char			*base;
+	long			nbr;
+	char			flag;
+
+}					t_info;
+
+int					ft_printf(const char *text, ...);
 
 #endif
