@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/07/01 13:11:42 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/07/01 13:35:42 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 	int		j;
 	int		pixel;
 
-	pixel = 32;
+	pixel = PIXEL;
 	i = 0;
 	while (mapa.map[i])
 	{
@@ -134,7 +134,7 @@ int handle_keypress(int keycode, t_game *game)
 	if (keycode == 100) // D key
 		game->player.move_right = 1;
 
-	printf("Key Press: %d\n", keycode); // Debugging key press
+	printf("Key Press: %d, %d\n", keycode, game->player.move_up); // Debugging key press
 
 	return (0);
 }
@@ -150,7 +150,7 @@ int handle_keyrelease(int keycode, t_game *game)
 	if (keycode == 100) // D key
 		game->player.move_right = 0;
 
-	printf("Key Release: %d\n", keycode); // Debugging key release
+	printf("Key Release: %d%d\n", keycode, game->player.move_up); // Debugging key release
 
 	return (0);
 }
@@ -243,21 +243,23 @@ void	ft_collectible(t_game *game)
 
 void ft_player(t_game *game)
 {
-	int next_x = game->player.pos_x;
-	int next_y = game->player.pos_y;
+	int next_x;
+	int next_y;
 
+	next_x = game->player.pos_x;
+	next_y = game->player.pos_y;
 	// Calculate next position based on input
 	if (game->player.move_up)
-		next_y -= MOVE_SPEED;
+		next_y -= 32;
 	if (game->player.move_down)
-		next_y += MOVE_SPEED;
+		next_y += 32;
 	if (game->player.move_left)
-		next_x -= MOVE_SPEED;
+		next_x -= 32;
 	if (game->player.move_right)
-		next_x += MOVE_SPEED;
+		next_x += 32;
 
 	// Debug: Log the calculated next position
-	printf("Next Position: X: %d, Y: %d\n", next_x, next_y);
+	printf("Next Position: X: %d, Y: %d, Player UP: %d\n", next_x, next_y, game->player.move_up);
 
 	// Calculate map indices for the next position
 	int map_x = next_x / PIXEL;
@@ -278,9 +280,9 @@ void ft_player(t_game *game)
 	}
 
 	// Debug: Log the updated player position
-	printf("Updated Player Position: X: %d, Y: %d\n", game->player.pos_x, game->player.pos_y);
+	printf("Updated Player Position: X: %d, Y: %d and next %d,%d\n", game->player.pos_x, game->player.pos_y,next_x ,next_y);
 
-	// Prevent player from moving out of bounds
+	/* Prevent player from moving out of bounds
 	if (game->player.pos_x < 0)
 		game->player.pos_x = 0;
 	if (game->player.pos_x + PIXEL > WIDTH)
@@ -289,7 +291,7 @@ void ft_player(t_game *game)
 		game->player.pos_y = 0;
 	if (game->player.pos_y + PIXEL > HEIGHT)
 		game->player.pos_y = HEIGHT - PIXEL;
-
+	*/
 	// Render the player
 	mlx_put_image_to_window(game->mlx, game->win, game->player_sprite[0], game->player.pos_x, game->player.pos_y);
 }
