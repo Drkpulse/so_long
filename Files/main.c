@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/07/01 13:35:42 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/08/05 15:13:43 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,17 @@
 # define HEIGHT 720
 # define PIXEL 32
 # define HEALTH 5
-# define MOVE_SPEED 32
+# define MOVE_SPEED 8
 # define DEBUG 1
 
 typedef struct s_img
 {
 	void	*mlx_img;
-	char	*addr;
+	int		*data;
+	int		width;
+	int		height;
 	int		bpp;
-	int		line_len;
+	int		size_line;
 	int		endian;
 }			t_img;
 
@@ -43,11 +45,16 @@ typedef struct s_player
 	int		pos_x;
 	int		pos_y;
 	int		health;
-	int		mana;
+	int		steps;
 	int		move_up;
 	int		move_down;
 	int		move_left;
 	int		move_right;
+	int		attack;
+	int		current_sprite;
+	int		move_sprite_index;
+	int		portal_sprite_index;
+	void	*sprites[15];
 }			t_player;
 
 typedef struct s_enemy
@@ -59,6 +66,13 @@ typedef struct s_enemy
 	void	*enemy_sprite[5];
 }			t_enemy;
 
+typedef struct s_collectible
+{
+	int		pos_x;
+	int		pos_y;
+	int		frame;
+	int		collected;
+}				t_collectible;
 
 typedef struct s_map
 {
@@ -69,11 +83,15 @@ typedef struct s_map
 	int				player_start_y;
 	int				n_enemy;
 	int				n_collectible;
-	void			*collectible_sprite[5];
-	void			*window_sprite[2];
+	int				n_collected;
+	t_collectible	**collectibles;
+	void			*collectible_sprite[15];
+	void			*window_sprite[15];
+	int				n_portal;
+	void			*portal_sprites[10];
 	int				width;
 	int				height;
-}			t_map;
+}					t_map;
 
 typedef struct s_game
 {
@@ -81,21 +99,61 @@ typedef struct s_game
 	void			*win;
 	int				movements;
 	int				game_started;
-	void			*player_sprite[10];
-	void			*exit_sprite[5];
 	long long		last_millitimestamp;
 	int				fps;
 	t_enemy			*enemies;
 	t_player		player;
 	t_map			map;
-	}			t_game;
+	}				t_game;
 
+
+void make_black_transparent(t_img *image)
+{
+	int x, y;
+
+	for (y = 0; y < image->height; y++)
+	{
+		for (x = 0; x < image->width; x++)
+		{
+			int pixel = image->data[y * image->size_line / 4 + x];
+			int r = (pixel >> 16) & 0xFF;
+			int g = (pixel >> 8) & 0xFF;
+			int b = pixel & 0xFF;
+
+			// Check if the pixel is black
+			if (r == 0 && g == 0 && b == 0)
+			{
+				// Set the pixel to transparent (ARGB format, 0xAARRGGBB)
+				image->data[y * image->size_line / 4 + x] = 0x00000000;
+			}
+		}
+	}
+}
+
+t_img *load_image(void *mlx, char *path)
+{
+	t_img *image;
+
+	image = malloc(sizeof(t_img));
+	if (!image)
+		return (NULL);
+	image->mlx_img = mlx_xpm_file_to_image(mlx, path, &image->width, &image->height);
+	if (!image->mlx_img)
+	{
+		free(image);
+		return (NULL);
+	}
+	image->data = (int *)mlx_get_data_addr(image->mlx_img, &image->bpp, &image->size_line, &image->endian);
+	make_black_transparent(image);
+	return (image);
+}
 
 void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 {
 	int		i;
 	int		j;
 	int		pixel;
+	int		random;
 
 	pixel = PIXEL;
 	i = 0;
@@ -104,10 +162,11 @@ void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 		j = 0;
 		while (mapa.map[i][j])
 		{
+			random = (i * j) % 10;
 			if (mapa.map[i][j] == '1')
-				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[1], j * pixel, i * pixel);
+				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[10], j * pixel, i * pixel);
 			if (mapa.map[i][j] == '0' || mapa.map[i][j] == 'P' || mapa.map[i][j] == 'C' || mapa.map[i][j] == 'E')
-				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[0], j * pixel, i * pixel);
+				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[random], j * pixel, i * pixel);
 			j++;
 		}
 		i++;
@@ -133,9 +192,8 @@ int handle_keypress(int keycode, t_game *game)
 		game->player.move_down = 1;
 	if (keycode == 100) // D key
 		game->player.move_right = 1;
-
-	printf("Key Press: %d, %d\n", keycode, game->player.move_up); // Debugging key press
-
+	if (keycode == 13) // D key
+		game->player.attack = 1;
 	return (0);
 }
 
@@ -149,9 +207,8 @@ int handle_keyrelease(int keycode, t_game *game)
 		game->player.move_down = 0;
 	if (keycode == 100) // D key
 		game->player.move_right = 0;
-
-	printf("Key Release: %d%d\n", keycode, game->player.move_up); // Debugging key release
-
+	if (keycode == 13) // D key
+		game->player.attack = 1;
 	return (0);
 }
 
@@ -162,11 +219,12 @@ void	ft_ready_game(t_game *game)
 	game->game_started = 0;
 	game->last_millitimestamp = 0;
 	game->map.n_collectible = 0;
+	game->map.n_collected = 0;
 	game->map.height = -1;
 	game->map.width = -1;
+	game->map.n_portal = 0;
 	game->map.lst_map = NULL;
 	game->mlx = mlx_init();
-	game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "So_Long");
 }
 
 // Get timestamp in milliseconds
@@ -208,95 +266,130 @@ void	fps(t_game *game)
 
 void	hook_register(t_game *game)
 {
-		mlx_hook(game->win, 2, 1L<<0, handle_keypress, &game);
-		mlx_hook(game->win, 3, 1L<<1, handle_keyrelease, &game);
-		mlx_hook(game->win, 17, 1L<<17, close_window, &game);
+		mlx_hook(game->win, 2, 1L<<0, handle_keypress, game);
+		mlx_hook(game->win, 3, 1L<<1, handle_keyrelease, game);
+		mlx_hook(game->win, 17, 1L<<17, close_window, game);
 }
 
-void	create_collectible(t_game *game, int w, int h)
+void	ft_collectible(t_game *game, long long now)
 {
-	int	pixel;
+	int	i;
+	t_collectible *collectible;
+	static long long last_collectible_update;
 
-	pixel = PIXEL;
-	mlx_put_image_to_window(game->mlx, game->win, game->map.collectible_sprite[0], h * pixel, w * pixel);
-}
-void	ft_collectible(t_game *game)
-{
-	int	w;
-	int	h;
+	last_collectible_update = 0;
+	i = 0;
 
-	w = 0;
-	while (game->map.map[w])
+	long long diff_millisecs;
+
+	diff_millisecs = now - last_collectible_update;
+	while (i < game->map.n_collectible)
 	{
-		h = 0;
-		while (game->map.map[w][h])
+		collectible = game->map.collectibles[i];
+		if (!collectible->collected)
 		{
-			if (game->map.map[w][h] == 'C')
-			{
-				create_collectible(game, w, h);
-			}
-			h++;
+			mlx_put_image_to_window(game->mlx, game->win, game->map.collectible_sprite[collectible->frame], collectible->pos_x * PIXEL, collectible->pos_y * PIXEL);
 		}
-		w++;
+		if (diff_millisecs > 120)
+		{
+			if (collectible->frame < 11)
+				collectible->frame++;
+			if (collectible->frame == 11)
+				collectible->frame = 0;
+		}
+		i++;
+	}
+
+}
+
+void	ft_collect(t_game *game, int x, int y)
+{
+	int	i;
+
+	i = 0;
+	while (i < game->map.n_collectible)
+	{
+		t_collectible *collectible = game->map.collectibles[i];
+		if (collectible->pos_x == x && collectible->pos_y == y && !collectible->collected)
+		{
+			collectible->collected = 1;
+			game->map.n_collected++;
+		}
+		i++;
 	}
 }
 
-void ft_player(t_game *game)
+void	check_collectible(t_game *game, int map_x, int map_y)
 {
-	int next_x;
-	int next_y;
+	if (game->map.map[map_y][map_x] == 'C') {
+		ft_collect(game, map_x, map_y);
+		game->map.map[map_y][map_x] = '0';
+	}
+}
+
+void	check_exit(t_game *game, int map_x, int map_y)
+{
+	if (game->map.map[map_y][map_x] == 'E') {
+		if ((game->map.n_collectible - game->map.n_collected) == 0)
+			exit(EXIT_SUCCESS);
+	}
+}
+
+void	ft_player(t_game *game)
+{
+	int	next_x;
+	int	next_y;
+
 
 	next_x = game->player.pos_x;
 	next_y = game->player.pos_y;
 	// Calculate next position based on input
 	if (game->player.move_up)
-		next_y -= 32;
+		next_y -= MOVE_SPEED;
 	if (game->player.move_down)
-		next_y += 32;
+		next_y += MOVE_SPEED;
 	if (game->player.move_left)
-		next_x -= 32;
+		next_x -= MOVE_SPEED;
 	if (game->player.move_right)
-		next_x += 32;
-
-	// Debug: Log the calculated next position
-	printf("Next Position: X: %d, Y: %d, Player UP: %d\n", next_x, next_y, game->player.move_up);
+		next_x += MOVE_SPEED;
 
 	// Calculate map indices for the next position
-	int map_x = next_x / PIXEL;
-	int map_y = next_y / PIXEL;
+	int map_x1 = next_x / PIXEL;
+	int map_y1 = next_y / PIXEL;
+	int map_x2 = (next_x + PIXEL - 1) / PIXEL;
+	int map_y2 = (next_y + PIXEL - 1) / PIXEL;
 
-	// Check collision with walls
-	if (game->map.map[map_y][map_x] != '1')
+	// Check for collision with walls
+	if (game->map.map[map_y1][map_x1] != '1' && game->map.map[map_y1][map_x2] != '1' &&
+		game->map.map[map_y2][map_x1] != '1' && game->map.map[map_y2][map_x2] != '1')
 	{
-		// Check for collectible
-		if (game->map.map[map_y][map_x] == 'C')
-		{
-			game->map.map[map_y][map_x] = '0'; // Remove collectible from map
-			game->map.n_collectible--;
-		}
+		// Check for collectibles
+		check_collectible(game, map_x1, map_y1);
+		check_collectible(game, map_x2, map_y1);
+		check_collectible(game, map_x1, map_y2);
+		check_collectible(game, map_x2, map_y2);
+
+		// Check for exit
+		check_exit(game, map_x1, map_y1);
+		check_exit(game, map_x2, map_y1);
+		check_exit(game, map_x1, map_y2);
+		check_exit(game, map_x2, map_y2);
+
 		// Update player position
 		game->player.pos_x = next_x;
 		game->player.pos_y = next_y;
 	}
 
-	// Debug: Log the updated player position
-	printf("Updated Player Position: X: %d, Y: %d and next %d,%d\n", game->player.pos_x, game->player.pos_y,next_x ,next_y);
+	// Print player position for debugging
+	if (game->player.pos_x != next_x || game->player.pos_y != next_y)
+		ft_printf("Player x: %d, y: %d / Next x: %d, y: %d\n", game->player.pos_x, game->player.pos_y, next_x, next_y);
 
-	/* Prevent player from moving out of bounds
-	if (game->player.pos_x < 0)
-		game->player.pos_x = 0;
-	if (game->player.pos_x + PIXEL > WIDTH)
-		game->player.pos_x = WIDTH - PIXEL;
-	if (game->player.pos_y < 0)
-		game->player.pos_y = 0;
-	if (game->player.pos_y + PIXEL > HEIGHT)
-		game->player.pos_y = HEIGHT - PIXEL;
-	*/
 	// Render the player
-	mlx_put_image_to_window(game->mlx, game->win, game->player_sprite[0], game->player.pos_x, game->player.pos_y);
+	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
 }
 
-void move_monsters(t_game *game)
+
+void	move_monsters(t_game *game)
 {
 	int	i;
 	int	next_x;
@@ -340,9 +433,51 @@ void move_monsters(t_game *game)
 	}
 }
 
+void	ft_exit(t_game *game)
+{
+	int	i;
+	int	j;
+	int	end;
 
+	i = 0;
+	end = game->map.n_collectible - game->map.n_collected;
+	if (game->map.n_portal < 8)
+		game->map.n_portal++;
+	else
+		game->map.n_portal = 0;
+	while (i < game->map.height)
+	{
+		j = 0;
+		while (j < game->map.width)
+		{
+				if (game->map.map[i][j] == 'E' && end != 0)
+					mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[6],j * PIXEL, i * PIXEL);
+				else if (game->map.map[i][j] == 'E' && end == 0)
+					mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[game->map.n_portal],j * PIXEL, i * PIXEL);
+			j++;
+		}
+		i++;
+	}
+}
 
-int game_loop(t_game *game)
+void	sprite_player_up(t_game *game)
+{
+	if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
+	{
+		if (game->player.move_sprite_index < 10)
+			game->player.move_sprite_index++;
+		else
+			game->player.move_sprite_index = 3;
+	}
+	else
+	{
+		if (game->player.move_sprite_index < 2)
+			game->player.move_sprite_index++;
+		else
+			game->player.move_sprite_index = 0;
+	}
+}
+int	game_loop(t_game *game)
 {
 	long long now;
 	long long diff_millisecs;
@@ -354,9 +489,11 @@ int game_loop(t_game *game)
 		fps(game);
 		mlx_clear_window(game->mlx, game->win);
 		fill_map(game->mlx, game->win, game->map);
-		ft_collectible(game);
+		ft_collectible(game, now);
+		ft_exit(game);
+		//move_monsters(game);
+		sprite_player_up(game);
 		ft_player(game);
-		move_monsters(game);
 		if (DEBUG)
 			show_fps(game);
 		game->last_millitimestamp = now;
@@ -473,7 +610,7 @@ int	check_char(t_game *game)
 	while (i < game->map.height)
 	{
 		j = 0;
-		while (j < game->map.width)
+		while (j < game->map.width - 1)
 		{
 			if (!(game->map.map[i][j] == '0'))
 				if (!(game->map.map[i][j] == 'P' || game->map.map[i][j] == 'C'
@@ -482,13 +619,51 @@ int	check_char(t_game *game)
 					return (1);
 			if (i == game->map.height && game->map.map[i][j] != '\n' )
 				return (1);
+			ft_printf("%c",game->map.map[i][j]);
 			j++;
 		}
+		ft_printf("\n");
 		i++;
 	}
 	return (0);
 }
+void	ft_init_collectible(t_game *game)
+{
+	int	collectible_index;
+	int	w;
+	int	h;
 
+	collectible_index = 0;
+	game->map.collectibles = malloc(game->map.n_collectible * sizeof(t_collectible *));
+	if (!game->map.collectibles)
+	{
+		fprintf(stderr, "Failed to allocate memory for collectibles\n");
+		exit(EXIT_FAILURE);
+	}
+	for (h = 0; h < game->map.height; h++)
+	{
+		for (w = 0; w < game->map.width; w++)
+		{
+			if (game->map.map[h][w] == 'C')
+			{
+				t_collectible *collectible = malloc(sizeof(t_collectible));
+				if (!collectible)
+				{
+					fprintf(stderr, "Failed to allocate memory for a collectible\n");
+					exit(EXIT_FAILURE);
+				}
+
+				collectible->pos_x = w;
+				collectible->pos_y = h;
+				collectible->frame = rand() % 10;
+				collectible->collected = 0;
+
+				game->map.collectibles[collectible_index++] = collectible;
+			}
+		}
+	}
+
+}
 
 int	count_char(t_game *game)
 {
@@ -525,14 +700,15 @@ int	surrounded(t_game *game)
 	int	i;
 
 	i = 0;
-	while (i < game->map.width)
+	printf("width: %d, height: %d\n", game->map.width, game->map.height);
+	while (i < game->map.width - 1)
 	{
 		if (game->map.map[0][i] != '1' && game->map.map[game->map.height - 1][i])
 			return (1);
 		i++;
 	}
-	i = 1;
-	while (i < game->map.height)
+	i = 0;
+	while (i < game->map.height - 1)
 	{
 		if (game->map.map[i][0] != '1' && game->map.map[i][game->map.width - 1] != '1')
 			return (1);
@@ -562,15 +738,56 @@ int	ft_init_map(int argc, char **argv, t_game *game)
 	return (0);
 }
 
+void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
+{
+	int		pixel;
+
+	pixel = PIXEL;
+	if (sprite_type == 1)
+		game->map.window_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+	if (sprite_type == 2)
+		game->map.window_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+	if (sprite_type == 3)
+		game->map.portal_sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+	if (sprite_type == 4)
+		game->player.sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+	if (sprite_type == 5)
+		game->map.collectible_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+
+}
+
+int	ft_load_sprite(t_game *game, int n_sprt, int sprite_type, char *path)
+{
+	int		i;
+	char	*num;
+	char	*str;
+	char	*filetype = {".xpm"};
+	char	*filepath;
+
+	i = 0;
+	while (i < n_sprt)
+	{
+		num = ft_itoa(i);
+		str = ft_strjoin(path, num);
+		filepath = ft_strjoin(str, filetype);
+		free(str);
+		load_xpm_sprite(game, i, sprite_type, filepath);
+		free(filepath);
+		i++;
+	}
+	return (0);
+}
+
 int	ft_init_sprite(t_game *game)
 {
-	int	pixel;
-	pixel = 32;
-
-	game->map.window_sprite[0] = mlx_xpm_file_to_image(game->mlx,"img_floor32.xpm", &pixel, &pixel);
-	game->map.window_sprite[1] = mlx_xpm_file_to_image(game->mlx,"img_wall32.xpm", &pixel, &pixel);
-	game->player_sprite[0] = mlx_xpm_file_to_image(game->mlx,"assets/character/c1.xpm", &pixel, &pixel);
-	game->map.collectible_sprite[0] = mlx_xpm_file_to_image(game->mlx,"assets/character/c1.xpm", &pixel, &pixel);
+	if(ft_load_sprite(game, 11, 1,"assets/map/floor"))
+		return (1);
+	if(ft_load_sprite(game, 9, 3, "assets/exit/exit"))
+		return (1);
+	if(ft_load_sprite(game, 14, 4, "assets/character/char"))
+		return (1);
+	if(ft_load_sprite(game, 11, 5, "assets/collect/coin"))
+		return (1);
 	return (0);
 }
 
@@ -589,14 +806,13 @@ int	ft_init_player(t_game *game)
 			{
 				game->player.pos_x = w * PIXEL;
 				game->player.pos_y = h * PIXEL;
-				printf("Player Starting Pos X: %d Y: %d\n", game->player.pos_x, game->player.pos_y);
 			}
 			h++;
 		}
 		w++;
 	}
 	game->player.health = HEALTH;
-	game->player.mana = 0;
+	game->player.steps = 0;
 	game->player.move_up = 0;
 	game->player.move_down = 0;
 	game->player.move_left = 0;
@@ -608,7 +824,7 @@ int create_monster(t_game *game, int w, int h)
 {
 	game->enemies[game->map.n_enemy].pos_x = h * PIXEL;
 	game->enemies[game->map.n_enemy].pos_y = w * PIXEL;
-	game->enemies[game->map.n_enemy].direction = rand() % 4; // Random initial direction
+	game->enemies[game->map.n_enemy].direction = rand() % 4;
 	game->enemies[game->map.n_enemy].sprite_index = 0;
 	game->map.n_enemy++;
 	return (0);
@@ -637,510 +853,25 @@ int ft_check_monsters(t_game *game)
 }
 
 
+void	ft_init_window(t_game *game, char *path)
+{
+	game->win = mlx_new_window(game->mlx, game->map.width * PIXEL, game->map.height * PIXEL, path);
+}
+
+
 int	main(int argc, char **argv)
 {
 	t_game	game;
 
 	ft_ready_game(&game);
 	ft_init_map(argc, argv, &game);
+	ft_init_window(&game, argv[1]);
 	ft_init_sprite(&game);
 	ft_init_player(&game);
+	ft_init_collectible(&game);
 	ft_check_monsters(&game);
 	hook_register(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_loop(game.mlx);
 	exit(EXIT_SUCCESS);
 }
-
-
-/*
-typedef struct s_data {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
-
-typedef struct s_vars {
-	void	*mlx;
-	void	*win;
-}				t_vars;
-
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int*)dst = color;
-}
-
-int close_window(t_vars *vars)
-{
-	mlx_destroy_window(vars->mlx, vars->win);
-	exit(0);
-	return (0);
-}
-
-int handle_resize()
-{
-	printf("Window resized\n");
-	return (0);
-}
-
-int handle_mouse_enter()
-{
-	printf("Hello!\n");
-	return (0);
-}
-
-int handle_mouse_leave()
-{
-	printf("Bye!\n");
-	return (0);
-}
-
-int	key_hook(int keycode, t_vars *vars)
-{
-	printf("\n%d", keycode);
-	if (keycode == 65307) // ESC key
-		close_window(vars);
-	return (0);
-}
-
-int	mouse_hook(int keycode)
-{
-	printf("\n%d", keycode);
-	return (0);
-}
-
-int main(void)
-{
-	t_vars  vars;
-	t_data  img;
-
-	vars.mlx = mlx_init();
-	vars.win = mlx_new_window(vars.mlx, 1280, 720, "Hello world!");
-	img.img = mlx_new_image(vars.mlx, 1280, 720);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
-								&img.endian);
-	my_mlx_pixel_put(&img, 5, 5, 0x00cd00ff);
-	mlx_put_image_to_window(vars.mlx, vars.win, img.img, 0, 0);
-	mlx_hook(vars.win, 12, 1L<<15, handle_resize, &vars); // Expose event for resizing
-	mlx_hook(vars.win, 17, 1L<<17, close_window, &vars); // DestroyNotify event (window close)
-	mlx_hook(vars.win, 7, 1L<<4, handle_mouse_enter, &vars); // EnterNotify event
-	mlx_hook(vars.win, 8, 1L<<5, handle_mouse_leave, &vars); // LeaveNotify event
-	mlx_key_hook(vars.win, key_hook, &vars);
-	mlx_mouse_hook(vars.win, mouse_hook, &vars);
-
-	mlx_loop(vars.mlx);
-}
-
-*/
-
-/*
-typedef struct s_data {
-	void    *mlx;
-	void    *win;
-	void    *img;
-	char    *addr;
-	int     bits_per_pixel;
-	int     line_length;
-	int     endian;
-	int     color_shift;
-	int     circle_x;
-	int     circle_y;
-}               t_data;
-
-void    my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-	char    *dst;
-
-	if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
-	{
-		dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-		*(unsigned int*)dst = color;
-	}
-}
-
-int render_next_frame(t_data *data)
-{
-	int x, y;
-	int color;
-
-	// Update color shift
-	data->color_shift = (data->color_shift + 1) % 1536;
-
-	// Clear the screen with the shifting color
-	for (y = 0; y < HEIGHT; y++)
-	{
-		for (x = 0; x < WIDTH; x++)
-		{
-			if (data->color_shift < 512)
-				color = (data->color_shift << 16) | ((255 - data->color_shift) << 8);
-			else if (data->color_shift < 1024)
-				color = ((1023 - data->color_shift) << 8) | ((255 - (data->color_shift - 512)) << 16);
-			else
-				color = ((data->color_shift - 1024) << 8) | ((255 - (data->color_shift - 1024)));
-			my_mlx_pixel_put(data, x, y, color);
-		}
-	}
-
-	// Draw the circle at its current position
-	int radius = 100;
-	for (y = -radius; y <= radius; y++)
-	{
-		for (x = -radius; x <= radius; x++)
-		{
-			if (x * x + y * y <= radius * radius)
-				my_mlx_pixel_put(data, data->circle_x + x, data->circle_y + y, 0xFFFFFF);
-		}
-	}
-
-	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
-	return (0);
-}
-
-int handle_keypress(int keycode, t_data *data)
-{
-	if (keycode == 65307) // ESC key
-		exit(0);
-	if (keycode == 119) // W key
-		data->circle_y -= 200;
-	if (keycode == 97) // A key
-		data->circle_x -= 200;
-	if (keycode == 115) // S key
-		data->circle_y += 200;
-	if (keycode == 100) // D key
-		data->circle_x += 200;
-	return (0);
-}
-
-int main(void)
-{
-	t_data  data;
-
-	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, WIDTH, HEIGHT, "Animation");
-	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
-	data.addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-	data.color_shift = 0;
-	data.circle_x = WIDTH / 2;
-	data.circle_y = HEIGHT / 2;
-
-	mlx_loop_hook(data.mlx, render_next_frame, &data);
-	mlx_key_hook(data.win, handle_keypress, &data);
-	mlx_loop(data.mlx);
-}
-*/
-
-/*
-#define WIDTH 1280
-#define HEIGHT 720
-#define RADIUS 50
-#define ENEMY_SIZE 20
-#define COLLECTIBLE_SIZE 10
-#define CIRCLE_SPEED 10
-#define ENEMY_SPEED 2
-#define SAFE_DISTANCE 200 // Minimum distance between circle and enemy when spawning
-
-typedef struct s_data {
-	void    *mlx;
-	void    *win;
-	void    *img;
-	char    *addr;
-	int     bits_per_pixel;
-	int     line_length;
-	int     endian;
-	int     circle_x;
-	int     circle_y;
-	int     circle_health;
-	int     enemy_x;
-	int     enemy_y;
-	int     collectible_x;
-	int     collectible_y;
-	int     has_collectible;
-	int     move_up;
-	int     move_down;
-	int     move_left;
-	int     move_right;
-	int     score;
-	int     window_width;
-	int		window_height;
-	int     game_started;
-	int     frames;
-}               t_data;
-
-void    my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-	char    *dst;
-
-	if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
-	{
-		dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-		*(unsigned int*)dst = color;
-	}
-}
-
-void    clear_image(t_data *data, int color)
-{
-	int x, y;
-	for (y = 0; y < HEIGHT; y++)
-	{
-		for (x = 0; x < WIDTH; x++)
-		{
-			my_mlx_pixel_put(data, x, y, color);
-		}
-	}
-}
-
-void    draw_circle(t_data *data, int x, int y, int radius, int color)
-{
-	int dx, dy;
-	for (dy = -radius; dy <= radius; dy++)
-	{
-		for (dx = -radius; dx <= radius; dx++)
-		{
-			if (dx * dx + dy * dy <= radius * radius)
-				my_mlx_pixel_put(data, x + dx, y + dy, color);
-		}
-	}
-}
-
-void    draw_square(t_data *data, int x, int y, int size, int color)
-{
-	int i, j;
-	for (i = 0; i < size; i++)
-	{
-		for (j = 0; j < size; j++)
-		{
-			my_mlx_pixel_put(data, x + i, y + j, color);
-		}
-	}
-}
-
-void    draw_edges(t_data *data, int color)
-{
-	int x, y;
-	for (x = 0; x < WIDTH; x++)
-	{
-		my_mlx_pixel_put(data, x, 0, color);
-		my_mlx_pixel_put(data, x, HEIGHT - 1, color);
-	}
-	for (y = 0; y < HEIGHT; y++)
-	{
-		my_mlx_pixel_put(data, 0, y, color);
-		my_mlx_pixel_put(data, WIDTH - 1, y, color);
-	}
-}
-
-void    move_enemy(t_data *data)
-{
-	int dx = data->circle_x - data->enemy_x;
-	int dy = data->circle_y - data->enemy_y;
-	float distance = sqrt(dx * dx + dy * dy);
-	if (distance != 0)
-	{
-		data->enemy_x += (dx / distance) * ENEMY_SPEED;
-		data->enemy_y += (dy / distance) * ENEMY_SPEED;
-	}
-}
-
-int check_collision(int x1, int y1, int size1, int x2, int y2, int size2)
-{
-	return (x1 < x2 + size2 && x1 + size1 > x2 && y1 < y2 + size2 && y1 + size1 > y2);
-}
-
-void update_circle_position(t_data *data)
-{
-	if (data->move_up)
-		data->circle_y -= CIRCLE_SPEED;
-	if (data->move_down)
-		data->circle_y += CIRCLE_SPEED;
-	if (data->move_left)
-		data->circle_x -= CIRCLE_SPEED;
-	if (data->move_right)
-		data->circle_x += CIRCLE_SPEED;
-
-	// Prevent circle from moving out of bounds
-	if (data->circle_x - RADIUS < 0)
-		data->circle_x = RADIUS;
-	if (data->circle_x + RADIUS > WIDTH)
-		data->circle_x = WIDTH - RADIUS;
-	if (data->circle_y - RADIUS < 0)
-		data->circle_y = RADIUS;
-	if (data->circle_y + RADIUS > HEIGHT)
-		data->circle_y = HEIGHT - RADIUS;
-}
-
-void respawn_enemy(t_data *data)
-{
-	int dx, dy;
-	do {
-		data->enemy_x = rand() % (WIDTH - ENEMY_SIZE);
-		data->enemy_y = rand() % (HEIGHT - ENEMY_SIZE);
-		dx = data->circle_x - data->enemy_x;
-		dy = data->circle_y - data->enemy_y;
-	} while (sqrt(dx * dx + dy * dy) < SAFE_DISTANCE);
-}
-
-int render_next_frame(t_data *data)
-{
-	clear_image(data, 0x000000); // Clear the screen with black color
-
-	// Draw the edges
-	draw_edges(data, 0xFFFFFF);
-
-	// Draw the circle
-	draw_circle(data, data->circle_x, data->circle_y, RADIUS, 0xFFFFFF);
-
-	// Move and draw the enemy
-	if (data->game_started) {
-		update_circle_position(data);
-		move_enemy(data);
-	}
-	if (data->has_collectible)
-	{
-
-		draw_square(data, data->enemy_x, data->enemy_y, ENEMY_SIZE, 0x00FF00); // Green if has collectible
-	}
-	else
-		draw_square(data, data->enemy_x, data->enemy_y, ENEMY_SIZE, 0xFF0000); // Red if doesn't have collectible
-
-	// Check collision between circle and enemy
-	if (check_collision(data->circle_x - RADIUS, data->circle_y - RADIUS, RADIUS * 2, data->enemy_x, data->enemy_y, ENEMY_SIZE))
-	{
-		if (data->has_collectible)
-		{
-			// Destroy enemy if circle has collectible
-			respawn_enemy(data);
-			data->has_collectible = 0; // Lose the collectible after attack
-			data->score += 10;
-			printf("Score %d\n", data->score);
-		}
-		else
-		{
-			// Reduce health if circle collides with enemy
-			data->circle_health -= 1;
-			data->score -= 5;
-			respawn_enemy(data);
-			printf("Circle Health: %d\n", data->circle_health);
-			if (data->circle_health <= 0)
-			{
-				printf("Game Over!\nFinal Score: %d\n", data->score);
-				exit(0);
-			}
-		}
-	}
-
-	// Draw the collectible if not collected
-	if (!data->has_collectible)
-		draw_square(data, data->collectible_x, data->collectible_y, COLLECTIBLE_SIZE, 0x00FF00);
-
-	// Check collision between circle and collectible
-	if (check_collision(data->circle_x - RADIUS, data->circle_y - RADIUS, RADIUS * 2, data->collectible_x, data->collectible_y, COLLECTIBLE_SIZE))
-	{
-		data->has_collectible = 1; // Collect the collectible
-		data->collectible_x = rand() % (WIDTH - COLLECTIBLE_SIZE);
-		data->collectible_y = rand() % (HEIGHT - COLLECTIBLE_SIZE);
-	}
-
-	// Display the score
-	char score_str[50];
-	sprintf(score_str, "Score: %d", data->score);
-	mlx_string_put(data->mlx, data->win, WIDTH / 2 - 50, 10, 0xFFFFFF, score_str);
-
-	// Display the health
-	char health_str[50];
-	sprintf(health_str, "Health: %d", data->circle_health);
-	mlx_string_put(data->mlx, data->win, WIDTH - 150, HEIGHT - 30, 0xFFFFFF, health_str);
-
-	// Display "press any key to start" message
-	if (!data->game_started && (data->frames / 30) % 2 == 0) // Flash every 30 frames
-	{
-		mlx_string_put(data->mlx, data->win, WIDTH / 2 - 100, HEIGHT / 2, 0xFFFFFF, "Press any key to start");
-	}
-
-	data->frames++;
-
-	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
-	return (0);
-}
-
-
-int handle_keypress(int keycode, t_data *data)
-{
-	if (!data->game_started) {
-		data->game_started = 1;
-	}
-
-	if (keycode == 65307) // ESC key
-		exit(0);
-	if (keycode == 119) // W key
-		data->move_up = 1;
-	if (keycode == 97) // A key
-		data->move_left = 1;
-	if (keycode == 115) // S key
-		data->move_down = 1;
-	if (keycode == 100) // D key
-		data->move_right = 1;
-
-	return (0);
-}
-
-int handle_keyrelease(int keycode, t_data *data)
-{
-	if (keycode == 119) // W key
-		data->move_up = 0;
-	if (keycode == 97) // A key
-		data->move_left = 0;
-	if (keycode == 115) // S key
-		data->move_down = 0;
-	if (keycode == 100) // D key
-		data->move_right = 0;
-
-	return (0);
-}
-
-int handle_resize(int width, int height, t_data *data)
-{
-	data->window_width = width;
-	data->window_height = height;
-	mlx_destroy_image(data->mlx, data->img);
-	data->img = mlx_new_image(data->mlx, width, height);
-	data->addr = mlx_get_data_addr(data->img, &data->bits_per_pixel, &data->line_length, &data->endian);
-	return (0);
-}
-int main(void)
-{
-	t_data  data;
-
-	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, WIDTH, HEIGHT, "Animation");
-	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
-	data.addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-	data.window_width = WIDTH;
-	data.window_height = HEIGHT;
-	data.circle_x = WIDTH / 2;
-	data.circle_y = HEIGHT / 2;
-	data.circle_health = 3; // Initial health
-	respawn_enemy(&data);
-	data.collectible_x = rand() % (WIDTH - COLLECTIBLE_SIZE);
-	data.collectible_y = rand() % (HEIGHT - COLLECTIBLE_SIZE);
-	data.has_collectible = 0;
-	data.move_up = 0;
-	data.move_down = 0;
-	data.move_left = 0;
-	data.move_right = 0;
-	data.score = 0;
-	data.game_started = 0;
-	data.frames = 0;
-
-	mlx_loop_hook(data.mlx, render_next_frame, &data);
-	mlx_hook(data.win, 2, 1L<<0, handle_keypress, &data);
-	mlx_hook(data.win, 3, 1L<<1, handle_keyrelease, &data);
-	mlx_hook(data.win, 17, 0, handle_resize, &data);
-	mlx_loop(data.mlx);
-}
-
-*/
