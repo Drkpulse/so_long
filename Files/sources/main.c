@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/08/05 15:13:43 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/08/09 12:59:48 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # define HEIGHT 720
 # define PIXEL 32
 # define HEALTH 5
-# define MOVE_SPEED 2
+# define MOVE_SPEED 8
 # define DEBUG 1
 
 typedef struct s_img
@@ -62,7 +62,8 @@ typedef struct s_enemy
 	int		pos_x;
 	int		pos_y;
 	int		direction;
-	int		frame;
+	int		sprite_index;
+	void	*enemy_sprite[5];
 }			t_enemy;
 
 typedef struct s_collectible
@@ -85,8 +86,6 @@ typedef struct s_map
 	int				n_collected;
 	t_collectible	**collectibles;
 	void			*collectible_sprite[15];
-	t_enemy			**enemies;
-	void			*enemies_sprite[5];
 	void			*window_sprite[15];
 	int				n_portal;
 	void			*portal_sprites[10];
@@ -102,33 +101,10 @@ typedef struct s_game
 	int				game_started;
 	long long		last_millitimestamp;
 	int				fps;
+	t_enemy			*enemies;
 	t_player		player;
 	t_map			map;
 	}				t_game;
-
-
-void make_black_transparent(t_img *image)
-{
-	int x, y;
-
-	for (y = 0; y < image->height; y++)
-	{
-		for (x = 0; x < image->width; x++)
-		{
-			int pixel = image->data[y * image->size_line / 4 + x];
-			int r = (pixel >> 16) & 0xFF;
-			int g = (pixel >> 8) & 0xFF;
-			int b = pixel & 0xFF;
-
-			// Check if the pixel is black
-			if (r == 0 && g == 0 && b == 0)
-			{
-				// Set the pixel to transparent (ARGB format, 0xAARRGGBB)
-				image->data[y * image->size_line / 4 + x] = 0x00000000;
-			}
-		}
-	}
-}
 
 t_img *load_image(void *mlx, char *path)
 {
@@ -273,13 +249,16 @@ void	hook_register(t_game *game)
 
 void	ft_collectible(t_game *game, long long now)
 {
-	int					i;
-	t_collectible		*collectible;
-	static long long	last_collectible_update = 0;
-	long long			diff_millisecs;
+	int	i;
+	t_collectible *collectible;
+	static long long last_collectible_update;
+
+	last_collectible_update = 0;
+	i = 0;
+
+	long long diff_millisecs;
 
 	diff_millisecs = now - last_collectible_update;
-	i = 0;
 	while (i < game->map.n_collectible)
 	{
 		collectible = game->map.collectibles[i];
@@ -289,20 +268,14 @@ void	ft_collectible(t_game *game, long long now)
 		}
 		if (diff_millisecs > 120)
 		{
-			if (collectible->frame < 10)
+			if (collectible->frame < 11)
 				collectible->frame++;
-			else
+			if (collectible->frame == 11)
 				collectible->frame = 0;
 		}
 		i++;
 	}
-	// Update the last collectible update time only if the frames have been updated
-	if (diff_millisecs > 120)
-	{
-		last_collectible_update = now;
-	}
 }
-
 
 void	ft_collect(t_game *game, int x, int y)
 {
@@ -337,22 +310,11 @@ void	check_exit(t_game *game, int map_x, int map_y)
 	}
 }
 
-void	show_steps(t_game *game)
-{
-	char	*steps_msg;
-	char	*steps;
-
-	steps = ft_itoa(game->player.steps);
-	steps_msg = ft_strjoin("Steps: ", steps);
-	mlx_string_put(game->mlx, game->win, 70, 20, 11001101, steps_msg);
-	free(steps);
-	free(steps_msg);
-}
-
 void	ft_player(t_game *game)
 {
-	int			next_x;
-	int			next_y;
+	int	next_x;
+	int	next_y;
+
 
 	next_x = game->player.pos_x;
 	next_y = game->player.pos_y;
@@ -388,89 +350,108 @@ void	ft_player(t_game *game)
 		check_exit(game, map_x1, map_y2);
 		check_exit(game, map_x2, map_y2);
 
-		if(game->player.pos_x != next_x || game->player.pos_y != next_y)
-		{
-			game->player.steps += 1;
-			ft_printf("Steps: %d\n", game->player.steps);
-		}
 		// Update player position
 		game->player.pos_x = next_x;
 		game->player.pos_y = next_y;
-
-
 	}
+
+	// Print player position for debugging
+	if (game->player.pos_x != next_x || game->player.pos_y != next_y)
+		ft_printf("Player x: %d, y: %d / Next x: %d, y: %d\n", game->player.pos_x, game->player.pos_y, next_x, next_y);
+
 	// Render the player
 	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
 }
 
 
-void	ft_exit(t_game *game, long long now)
+void	move_monsters(t_game *game)
+{
+	int	i;
+	int	next_x;
+	int	next_y;
+	int	index;
+
+	i = 0;
+	while (i < game->map.n_enemy)
+	{
+		index = game->enemies[i].sprite_index;
+		next_x = game->enemies[i].pos_x;
+		next_y = game->enemies[i].pos_y;
+
+		if (game->enemies[i].direction == 0)
+			next_y -= MOVE_SPEED;
+		else if (game->enemies[i].direction == 1)
+			next_y += MOVE_SPEED;
+		else if (game->enemies[i].direction == 2)
+			next_x -= MOVE_SPEED;
+		else if (game->enemies[i].direction == 3)
+			next_x += MOVE_SPEED;
+
+		int map_x = next_x / PIXEL;
+		int map_y = next_y / PIXEL;
+
+		if (game->map.map[map_y][map_x] != '1')
+		{
+			game->enemies[i].pos_x = next_x;
+			game->enemies[i].pos_y = next_y;
+		}
+		else
+		{
+			game->enemies[i].direction = rand() % 4;
+		}
+		mlx_put_image_to_window(game->mlx, game->win, game->enemies[i].enemy_sprite[index + 1], game->enemies[i].pos_x, game->enemies[i].pos_y);
+		if (game->enemies[i].sprite_index < 4)
+			game->enemies[i].sprite_index++;
+		else
+			game->enemies[i].sprite_index = 0;
+		i++;
+	}
+}
+
+void	ft_exit(t_game *game)
 {
 	int	i;
 	int	j;
 	int	end;
-	static long long last_portal_update = 0;
-	long long diff_millisecs;
-
-	diff_millisecs = now - last_portal_update;
 
 	i = 0;
 	end = game->map.n_collectible - game->map.n_collected;
-	if (diff_millisecs > 150)
-	{
-		if (game->map.n_portal < 7)
-			game->map.n_portal++;
-		else
-			game->map.n_portal = 0;
-		last_portal_update = now;
-	}
-
+	if (game->map.n_portal < 8)
+		game->map.n_portal++;
+	else
+		game->map.n_portal = 0;
 	while (i < game->map.height)
 	{
 		j = 0;
 		while (j < game->map.width)
 		{
-			if (game->map.map[i][j] == 'E' && end != 0)
-				mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[6], j * PIXEL, i * PIXEL);
-			else if (game->map.map[i][j] == 'E' && end == 0)
-				mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[game->map.n_portal], j * PIXEL, i * PIXEL);
+				if (game->map.map[i][j] == 'E' && end != 0)
+					mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[6],j * PIXEL, i * PIXEL);
+				else if (game->map.map[i][j] == 'E' && end == 0)
+					mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[game->map.n_portal],j * PIXEL, i * PIXEL);
 			j++;
 		}
 		i++;
 	}
 }
 
-
-void	sprite_player_up(t_game *game, long long now)
+void	sprite_player_up(t_game *game)
 {
-	static long long last_player_update = 0;
-	long long diff_millisecs;
-
-	diff_millisecs = now - last_player_update;
-
-	// Update the sprite only if 120 milliseconds have passed
-	if (diff_millisecs > 120)
+	if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
 	{
-		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
-		{
-			if (game->player.move_sprite_index < 10)
-				game->player.move_sprite_index++;
-			else
-				game->player.move_sprite_index = 3;
-		}
+		if (game->player.move_sprite_index < 10)
+			game->player.move_sprite_index++;
 		else
-		{
-			if (game->player.move_sprite_index < 2)
-				game->player.move_sprite_index++;
-			else
-				game->player.move_sprite_index = 0;
-		}
-		// Update the last player update time
-		last_player_update = now;
+			game->player.move_sprite_index = 3;
+	}
+	else
+	{
+		if (game->player.move_sprite_index < 2)
+			game->player.move_sprite_index++;
+		else
+			game->player.move_sprite_index = 0;
 	}
 }
-
-
 int	game_loop(t_game *game)
 {
 	long long now;
@@ -478,22 +459,18 @@ int	game_loop(t_game *game)
 
 	now = millitimestamp();
 	diff_millisecs = now - game->last_millitimestamp;
-	if (diff_millisecs > 15)
+	if (diff_millisecs > 30)
 	{
 		fps(game);
 		mlx_clear_window(game->mlx, game->win);
 		fill_map(game->mlx, game->win, game->map);
 		ft_collectible(game, now);
-		ft_exit(game, now);
+		ft_exit(game);
 		//move_monsters(game);
-		sprite_player_up(game, now);
+		sprite_player_up(game);
 		ft_player(game);
 		if (DEBUG)
-		{
-			show_steps(game);
 			show_fps(game);
-		}
-
 		game->last_millitimestamp = now;
 	}
 	return (1);
@@ -558,7 +535,7 @@ int	map_to_lst(t_game *game)
 			return (0);
 		}
 		if (game->map.width == -1)
-			game->map.width = ft_strlen(line);
+			game->map.width = ft_strlen(line) - 1;
 		if (game->map.lst_map == NULL)
 			game->map.lst_map = ft_lstnew(line);
 		else
@@ -608,14 +585,14 @@ int	check_char(t_game *game)
 	while (i < game->map.height)
 	{
 		j = 0;
-		while (j < game->map.width)
+		while (j < game->map.width - 1)
 		{
 			if (!(game->map.map[i][j] == '0'))
 				if (!(game->map.map[i][j] == 'P' || game->map.map[i][j] == 'C'
 				|| game->map.map[i][j] == 'E' || game->map.map[i][j] == '1'
 				|| (i == game->map.height && game->map.map[i][j] == '\n')))
 					return (1);
-			if (i == game->map.height + 1 && game->map.map[i][j] != '\n' )
+			if (i == game->map.height && game->map.map[i][j] != '\n' )
 				return (1);
 			ft_printf("%c",game->map.map[i][j]);
 			j++;
@@ -715,26 +692,6 @@ int	surrounded(t_game *game)
 	return (0);
 }
 
-int	ft_init_map(int argc, char **argv, t_game *game)
-{
-	if (argc != 2)
-		janitor(1);
-	if (open_map(argv[1], game))
-		janitor(2);
-	if (map_to_lst(game))
-		janitor(3);
-	if (map_to_two_d(game))
-		janitor(4);
-	if (map_size(game))
-		janitor(5);
-	if (check_char(game))
-		janitor(6);
-	if (surrounded(game))
-		janitor(7);
-	if (count_char(game))
-		janitor(8);
-	return (0);
-}
 
 
 void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
@@ -752,8 +709,6 @@ void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
 		game->player.sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
 	if (sprite_type == 5)
 		game->map.collectible_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
-	//if (sprite_type == 6)
-	//	game->enemies.sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
 
 }
 
@@ -792,6 +747,39 @@ int	ft_init_sprite(t_game *game)
 	return (0);
 }
 
+
+
+int create_monster(t_game *game, int w, int h)
+{
+	game->enemies[game->map.n_enemy].pos_x = h * PIXEL;
+	game->enemies[game->map.n_enemy].pos_y = w * PIXEL;
+	game->enemies[game->map.n_enemy].direction = rand() % 4;
+	game->enemies[game->map.n_enemy].sprite_index = 0;
+	game->map.n_enemy++;
+	return (0);
+}
+
+int ft_check_monsters(t_game *game)
+{
+	int w, h;
+
+	game->map.n_enemy = 0;
+	w = 0;
+	while (game->map.map[w])
+	{
+		h = 0;
+		while (game->map.map[w][h])
+		{
+			if (game->map.map[w][h] == 'M')
+			{
+				create_monster(game, w, h);
+			}
+			h++;
+		}
+		w++;
+	}
+	return (0);
+}
 int	ft_init_player(t_game *game)
 {
 	int	w;
@@ -821,21 +809,25 @@ int	ft_init_player(t_game *game)
 	return (0);
 }
 
-/*
-int create_monster(t_game *game, int w, int h)
+int	ft_init_map(int argc, char **argv, t_game *game)
 {
-	game->maps.enemies[game->map.n_enemy].pos_x = h * PIXEL;
-	game->enemies[game->map.n_enemy].pos_y = w * PIXEL;
-	game->enemies[game->map.n_enemy].direction = rand() % 4;
-	game->enemies[game->map.n_enemy].sprite_index = 0;
-	game->map.n_enemy++;
+	if (argc != 2)
+		janitor(1);
+	if (open_map(argv[1], game))
+		janitor(2);
+	if (map_to_lst(game))
+		janitor(3);
+	if (map_to_two_d(game))
+		janitor(4);
+	if (map_size(game))
+		janitor(5);
+	if (check_char(game))
+		janitor(6);
+	if (surrounded(game))
+		janitor(7);
+	if (count_char(game))
+		janitor(8);
 	return (0);
-}
-*/
-int ft_check_monsters(t_game *game)
-{
-	game->map.n_enemy = 0;
-	return (1);
 }
 
 
@@ -855,7 +847,7 @@ int	main(int argc, char **argv)
 	ft_init_sprite(&game);
 	ft_init_player(&game);
 	ft_init_collectible(&game);
-	//ft_check_monsters(&game);
+	ft_check_monsters(&game);
 	hook_register(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_loop(game.mlx);

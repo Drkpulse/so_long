@@ -1,6 +1,8 @@
 MAKEFLAGS 	+= -s
 
-SRC		= main.c
+SRC		= main.c game_init.c map_utils.c player.c \
+		collectibles.c load_image.c input.c game_loop.c \
+		debug.c map_init.c
 
 OBJS		= $(SRC:.c=.o)
 
@@ -38,5 +40,6 @@ fclean: clean
 	$(RM) $(NAME)
 	@echo "$(RED)@\Cleaned all named files\@"
 
+re: fclean all
 
 .PHONY:	all clean fclean re
