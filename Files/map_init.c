@@ -72,3 +72,28 @@ int	count_char(t_game *game)
 		return (1);
 	return (0);
 }
+
+void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
+{
+	int		i;
+	int		j;
+	int		pixel;
+	int		random;
+
+	pixel = PIXEL;
+	i = 0;
+	while (mapa.map[i])
+	{
+		j = 0;
+		while (mapa.map[i][j])
+		{
+			random = (i * j) % 10;
+			if (mapa.map[i][j] == '1')
+				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[10], j * pixel, i * pixel);
+			if (mapa.map[i][j] == '0' || mapa.map[i][j] == 'P' || mapa.map[i][j] == 'C' || mapa.map[i][j] == 'E')
+				mlx_put_image_to_window(mlx_pointer, mlx_window, mapa.window_sprite[random], j * pixel, i * pixel);
+			j++;
+		}
+		i++;
+	}
+}

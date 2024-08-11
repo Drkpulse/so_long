@@ -36,3 +36,15 @@ void	fps(t_game *game)
 		game->last_millitimestamp = now;
 	}
 }
+
+void	show_steps(t_game *game)
+{
+	char	*steps_msg;
+	char	*steps;
+
+	steps = ft_itoa(game->player.steps);
+	steps_msg = ft_strjoin("Steps: ", steps);
+	mlx_string_put(game->mlx, game->win, 70, 20, 11001101, steps_msg);
+	free(steps);
+	free(steps_msg);
+}

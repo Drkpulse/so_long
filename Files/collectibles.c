@@ -3,13 +3,13 @@
 
 void	ft_collectible(t_game *game, long long now)
 {
-	int	i;
-	t_collectible *collectible;
-	i = 0;
-
-	long long diff_millisecs;
+	int					i;
+	t_collectible		*collectible;
+	static long long	last_collectible_update = 0;
+	long long			diff_millisecs;
 
 	diff_millisecs = now - last_collectible_update;
+	i = 0;
 	while (i < game->map.n_collectible)
 	{
 		collectible = game->map.collectibles[i];
@@ -17,14 +17,19 @@ void	ft_collectible(t_game *game, long long now)
 		{
 			mlx_put_image_to_window(game->mlx, game->win, game->map.collectible_sprite[collectible->frame], collectible->pos_x * PIXEL, collectible->pos_y * PIXEL);
 		}
-		if (diff_millisecs > 240)
+		if (diff_millisecs > 120)
 		{
-			if (collectible->frame < 11)
+			if (collectible->frame < 10)
 				collectible->frame++;
-			if (collectible->frame == 11)
+			else
 				collectible->frame = 0;
 		}
 		i++;
+	}
+	// Update the last collectible update time only if the frames have been updated
+	if (diff_millisecs > 120)
+	{
+		last_collectible_update = now;
 	}
 }
 

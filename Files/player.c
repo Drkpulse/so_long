@@ -6,20 +6,20 @@ int	ft_init_player(t_game *game)
 	int	w;
 	int	h;
 
-	w = 0;
-	while (game->map.map[w])
+	h = 0;
+	while (game->map.map[h])
 	{
-		h = 0;
-		while (game->map.map[w][h])
+		w = 0;
+		while (game->map.map[h][w])
 		{
-			if (game->map.map[w][h] == 'P')
+			if (game->map.map[h][w] == 'P')
 			{
 				game->player.pos_x = w * PIXEL;
 				game->player.pos_y = h * PIXEL;
 			}
-			h++;
+			w++;
 		}
-		w++;
+		h++;
 	}
 	game->player.health = HEALTH;
 	game->player.steps = 0;
@@ -32,9 +32,8 @@ int	ft_init_player(t_game *game)
 
 void	ft_player(t_game *game)
 {
-	int	next_x;
-	int	next_y;
-
+	int			next_x;
+	int			next_y;
 
 	next_x = game->player.pos_x;
 	next_y = game->player.pos_y;
@@ -70,34 +69,47 @@ void	ft_player(t_game *game)
 		check_exit(game, map_x1, map_y2);
 		check_exit(game, map_x2, map_y2);
 
+		if(game->player.pos_x != next_x || game->player.pos_y != next_y)
+		{
+			game->player.steps += 1;
+			ft_printf("Steps: %d\n", game->player.steps);
+		}
 		// Update player position
 		game->player.pos_x = next_x;
 		game->player.pos_y = next_y;
+
+
 	}
-
-	// Print player position for debugging
-	if (game->player.pos_x != next_x || game->player.pos_y != next_y)
-		ft_printf("Player x: %d, y: %d / Next x: %d, y: %d\n", game->player.pos_x, game->player.pos_y, next_x, next_y);
-
 	// Render the player
 	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
 }
 
-void	sprite_player_up(t_game *game)
+void	sprite_player_up(t_game *game, long long now)
 {
-	if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
+	static long long last_player_update = 0;
+	long long diff_millisecs;
+
+	diff_millisecs = now - last_player_update;
+
+	// Update the sprite only if 120 milliseconds have passed
+	if (diff_millisecs > 120)
 	{
-		if (game->player.move_sprite_index < 10)
-			game->player.move_sprite_index++;
+		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
+		{
+			if (game->player.move_sprite_index < 10)
+				game->player.move_sprite_index++;
+			else
+				game->player.move_sprite_index = 3;
+		}
 		else
-			game->player.move_sprite_index = 3;
-	}
-	else
-	{
-		if (game->player.move_sprite_index < 2)
-			game->player.move_sprite_index++;
-		else
-			game->player.move_sprite_index = 0;
+		{
+			if (game->player.move_sprite_index < 2)
+				game->player.move_sprite_index++;
+			else
+				game->player.move_sprite_index = 0;
+		}
+		// Update the last player update time
+		last_player_update = now;
 	}
 }
 

@@ -81,7 +81,7 @@ int	check_char(t_game *game)
 	while (i < game->map.height)
 	{
 		j = 0;
-		while (j < game->map.width - 1)
+		while (j < game->map.width)
 		{
 			if (!(game->map.map[i][j] == '0'))
 				if (!(game->map.map[i][j] == 'P' || game->map.map[i][j] == 'C'
