@@ -478,7 +478,7 @@ int	game_loop(t_game *game)
 
 	now = millitimestamp();
 	diff_millisecs = now - game->last_millitimestamp;
-	if (diff_millisecs > 30)
+	if (diff_millisecs > 15)
 	{
 		fps(game);
 		mlx_clear_window(game->mlx, game->win);
@@ -558,7 +558,7 @@ int	map_to_lst(t_game *game)
 			return (0);
 		}
 		if (game->map.width == -1)
-			game->map.width = ft_strlen(line) - 1;
+			game->map.width = ft_strlen(line);
 		if (game->map.lst_map == NULL)
 			game->map.lst_map = ft_lstnew(line);
 		else
@@ -608,14 +608,14 @@ int	check_char(t_game *game)
 	while (i < game->map.height)
 	{
 		j = 0;
-		while (j < game->map.width - 1)
+		while (j < game->map.width)
 		{
 			if (!(game->map.map[i][j] == '0'))
 				if (!(game->map.map[i][j] == 'P' || game->map.map[i][j] == 'C'
 				|| game->map.map[i][j] == 'E' || game->map.map[i][j] == '1'
 				|| (i == game->map.height && game->map.map[i][j] == '\n')))
 					return (1);
-			if (i == game->map.height && game->map.map[i][j] != '\n' )
+			if (i == game->map.height + 1 && game->map.map[i][j] != '\n' )
 				return (1);
 			ft_printf("%c",game->map.map[i][j]);
 			j++;
