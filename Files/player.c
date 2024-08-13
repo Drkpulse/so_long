@@ -27,6 +27,7 @@ int	ft_init_player(t_game *game)
 	game->player.move_down = 0;
 	game->player.move_left = 0;
 	game->player.move_right = 0;
+	game->player.move_sprite_index = 0;
 	return (0);
 }
 
@@ -77,8 +78,6 @@ void	ft_player(t_game *game)
 		// Update player position
 		game->player.pos_x = next_x;
 		game->player.pos_y = next_y;
-
-
 	}
 	// Render the player
 	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
@@ -123,7 +122,8 @@ void	check_collectible(t_game *game, int map_x, int map_y)
 
 void	check_exit(t_game *game, int map_x, int map_y)
 {
-	if (game->map.map[map_y][map_x] == 'E') {
+	if (game->map.map[map_y][map_x] == 'E')
+	{
 		if ((game->map.n_collectible - game->map.n_collected) == 0)
 			exit(EXIT_SUCCESS);
 	}

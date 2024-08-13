@@ -36,6 +36,7 @@ int	ft_load_sprite(t_game *game, int n_sprt, int sprite_type, char *path)
 		str = ft_strjoin(path, num);
 		filepath = ft_strjoin(str, filetype);
 		free(str);
+		free(num);
 		load_xpm_sprite(game, i, sprite_type, filepath);
 		free(filepath);
 		i++;
