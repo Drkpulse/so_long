@@ -59,7 +59,7 @@ int	map_to_two_d(t_game *game)
 		i++;
 		game->map.lst_map = game->map.lst_map->next;
 	}
-	game->map.width = ft_strlen(game->map.map[0]) - 1;
+	game->map.width = ft_strlen(game->map.map[0]) - 2;
 	if (game->map.width < 4)
 		return (1);
 	return (0);
