@@ -26,11 +26,8 @@ void	ft_collectible(t_game *game, long long now)
 		}
 		i++;
 	}
-	// Update the last collectible update time only if the frames have been updated
 	if (diff_millisecs > 120)
-	{
 		last_collectible_update = now;
-	}
 }
 
 void	ft_collect(t_game *game, int x, int y)
@@ -75,15 +72,12 @@ void	ft_init_collectible(t_game *game)
 					fprintf(stderr, "Failed to allocate memory for a collectible\n");
 					exit(EXIT_FAILURE);
 				}
-
 				collectible->pos_x = w;
 				collectible->pos_y = h;
 				collectible->frame = rand() % 10;
 				collectible->collected = 0;
-
 				game->map.collectibles[collectible_index++] = collectible;
 			}
 		}
 	}
-
 }

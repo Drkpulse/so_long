@@ -10,19 +10,88 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "game.h"
-/*
-int create_monster(t_game *game, int w, int h)
+
+void	check_enemies(t_game *game)
 {
-	game->maps.enemies[game->map.n_enemy].pos_x = h * PIXEL;
-	game->enemies[game->map.n_enemy].pos_y = w * PIXEL;
-	game->enemies[game->map.n_enemy].direction = rand() % 4;
-	game->enemies[game->map.n_enemy].sprite_index = 0;
-	game->map.n_enemy++;
-	return (0);
+	int	w;
+	int	h;
+
+	game->map.n_enemies = 0;
+	while (h < game->map.height)
+	{
+		while (w < game->map.width)
+		{
+			if (game->map.map[h][w] == 'F')
+				game->map.n_enemies++;
+			w++;
+		}
+		h++;
+	}
 }
-*/
-int ft_check_monsters(t_game *game)
+
+void	init_enemies(t_game *game)
 {
-	game->map.n_enemy = 0;
-	return (1);
+	int	enemy_index;
+	int	w;
+	int	h;
+
+	h = 0;
+	w = 0;
+	enemy_index = 0;
+	game->map.enemies = malloc(game->map.n_enemies * sizeof(t_enemy *));
+	if (!game->map.enemies)
+	{
+		fprintf(stderr, "Failed to allocate memory for collectibles\n");
+		exit(EXIT_FAILURE);
+	}
+	while (h < game->map.height)
+	{
+		while (w < game->map.width)
+		{
+			if (game->map.map[h][w] == 'F')
+			{
+				t_enemy *enemy = malloc(sizeof(t_enemy));
+				if (!enemy)
+				{
+					fprintf(stderr, "Failed to allocate memory for a collectible\n");
+					exit(EXIT_FAILURE);
+				}
+				enemy->pos_x = w;
+				enemy->pos_y = h;
+				enemy->frame = rand() % 10;
+				enemy->dead = 0;
+				enemy->direction = rand() % 4;
+				game->map.enemies[enemy_index++] = enemy;
+			}
+			w++;
+		}
+		h++;
+	}
+}
+
+void	enemy_atk(t_game *game, int x, int y)
+{
+	int	i;
+
+	i = 0;
+	while (i < game->map.n_enemies)
+	{
+		t_collectible *enemies = game->map.enemies[i];
+		if (enemies->pos_x == x && enemies->pos_y == y && !enemies->dead)
+		{
+			game->player.health--;
+		}
+		i++;
+	}
+}
+
+void	move_monsters(t_game *game)
+{
+	int	i;
+
+	i = 0;
+	while (i < game->map.n_enemies)
+	{
+		i++;
+	}
 }

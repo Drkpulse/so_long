@@ -94,20 +94,15 @@ void	sprite_player_up(t_game *game, long long now)
 	if (diff_millisecs > 120)
 	{
 		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
-		{
 			if (game->player.move_sprite_index < 10)
 				game->player.move_sprite_index++;
 			else
 				game->player.move_sprite_index = 3;
-		}
 		else
-		{
 			if (game->player.move_sprite_index < 2)
 				game->player.move_sprite_index++;
 			else
 				game->player.move_sprite_index = 0;
-		}
-		// Update the last player update time
 		last_player_update = now;
 	}
 }

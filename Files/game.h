@@ -22,10 +22,10 @@
 #define KEY_A 97
 #define KEY_S 115
 #define KEY_D 100
-#define ARROW_UP 126
-#define ARROW_LEFT 123
-#define ARROW_DOWN 125
-#define ARROW_RIGHT 124
+#define ARROW_UP 65362
+#define ARROW_LEFT 65361
+#define ARROW_DOWN 65364
+#define ARROW_RIGHT 65363
 #define DEBUG 1
 
 typedef struct s_img
@@ -62,6 +62,7 @@ typedef struct s_enemy
 	int		pos_y;
 	int		direction;
 	int		frame;
+	int		dead;
 }			t_enemy;
 
 typedef struct s_collectible
@@ -79,7 +80,7 @@ typedef struct s_map
 	char			**map;
 	int				player_start_x;
 	int				player_start_y;
-	int				n_enemy;
+	int				n_enemies;
 	int				n_collectible;
 	int				n_collected;
 	t_collectible	**collectibles;
