@@ -21,6 +21,12 @@ int	ft_init_player(t_game *game)
 		}
 		h++;
 	}
+	init_player_var(game);
+	return (0);
+}
+
+void	init_player_var(t_game *game)
+{
 	game->player.health = HEALTH;
 	game->player.steps = 0;
 	game->player.move_up = 0;
@@ -28,7 +34,6 @@ int	ft_init_player(t_game *game)
 	game->player.move_left = 0;
 	game->player.move_right = 0;
 	game->player.move_sprite_index = 0;
-	return (0);
 }
 
 void	ft_player(t_game *game)

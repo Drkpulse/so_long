@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "game.h"
 
-void	check_enemies(t_game *game)
+void	count_enemies(t_game *game)
 {
 	int	w;
 	int	h;
@@ -31,6 +31,17 @@ void	check_enemies(t_game *game)
 
 void	init_enemies(t_game *game)
 {
+	game->map.enemies = malloc(game->map.n_enemies * sizeof(t_enemy *));
+	if (!game->map.enemies)
+	{
+		fprintf(stderr, "Failed to allocate memory for collectibles\n");
+		exit(EXIT_FAILURE);
+	}
+	init_enemy(game);
+}
+
+void	init_enemy(t_game *game)
+{
 	int	enemy_index;
 	int	w;
 	int	h;
@@ -38,12 +49,6 @@ void	init_enemies(t_game *game)
 	h = 0;
 	w = 0;
 	enemy_index = 0;
-	game->map.enemies = malloc(game->map.n_enemies * sizeof(t_enemy *));
-	if (!game->map.enemies)
-	{
-		fprintf(stderr, "Failed to allocate memory for collectibles\n");
-		exit(EXIT_FAILURE);
-	}
 	while (h < game->map.height)
 	{
 		while (w < game->map.width)
@@ -56,11 +61,7 @@ void	init_enemies(t_game *game)
 					fprintf(stderr, "Failed to allocate memory for a collectible\n");
 					exit(EXIT_FAILURE);
 				}
-				enemy->pos_x = w;
-				enemy->pos_y = h;
-				enemy->frame = rand() % 10;
-				enemy->dead = 0;
-				enemy->direction = rand() % 4;
+				default_enemy(*enemy, w, h);
 				game->map.enemies[enemy_index++] = enemy;
 			}
 			w++;
@@ -68,6 +69,15 @@ void	init_enemies(t_game *game)
 		h++;
 	}
 }
+void	default_enemy(t_enemy enemy, int w, int h)
+{
+	enemy.pos_x = w;
+	enemy.pos_y = h;
+	enemy.frame = rand() % 10;
+	enemy.dead = 0;
+	enemy.direction = rand() % 4;
+}
+
 
 void	enemy_atk(t_game *game, int x, int y)
 {
@@ -76,7 +86,7 @@ void	enemy_atk(t_game *game, int x, int y)
 	i = 0;
 	while (i < game->map.n_enemies)
 	{
-		t_collectible *enemies = game->map.enemies[i];
+		t_enemy *enemies = game->map.enemies[i];
 		if (enemies->pos_x == x && enemies->pos_y == y && !enemies->dead)
 		{
 			game->player.health--;
@@ -92,6 +102,8 @@ void	move_monsters(t_game *game)
 	i = 0;
 	while (i < game->map.n_enemies)
 	{
+		t_enemy *enemy = game->map.enemies[i];
+
 		i++;
 	}
 }
