@@ -16,8 +16,8 @@ void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
 		game->player.sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
 	if (sprite_type == 5)
 		game->map.collectible_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
-	//if (sprite_type == 6)
-	//	game->enemies.sprites[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+	if (sprite_type == 6)
+		game->map.enemies_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
 
 }
 
@@ -53,6 +53,8 @@ int	ft_init_sprite(t_game *game)
 	if(ft_load_sprite(game, 14, 4, "assets/character/char"))
 		return (1);
 	if(ft_load_sprite(game, 11, 5, "assets/collect/coin"))
+		return (1);
+	if(ft_load_sprite(game, 1, 6, "assets/character/char"))
 		return (1);
 	return (0);
 }

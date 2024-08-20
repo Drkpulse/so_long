@@ -8,6 +8,7 @@ void ft_ready_game(t_game *game)
 	game->last_millitimestamp = 0;
 	game->map.n_collectible = 0;
 	game->map.n_collected = 0;
+	game->map.n_enemies = 0;
 	game->map.height = -1;
 	game->map.width = -1;
 	game->map.n_portal = 0;

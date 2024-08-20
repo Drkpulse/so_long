@@ -2,7 +2,7 @@ NAME		= so_long
 
 SRC		= main.c game_init.c map_utils.c player.c \
 		collectibles.c load_image.c input.c game_loop.c \
-		debug.c map_init.c
+		debug.c map_init.c enemies.c
 
 OBJ_DIR = obj
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))

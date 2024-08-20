@@ -1,6 +1,17 @@
 // player.c
 #include "game.h"
 
+void	init_player_var(t_game *game)
+{
+	game->player.health = HEALTH;
+	game->player.steps = 0;
+	game->player.move_up = 0;
+	game->player.move_down = 0;
+	game->player.move_left = 0;
+	game->player.move_right = 0;
+	game->player.move_sprite_index = 0;
+}
+
 int	ft_init_player(t_game *game)
 {
 	int	w;
@@ -25,68 +36,71 @@ int	ft_init_player(t_game *game)
 	return (0);
 }
 
-void	init_player_var(t_game *game)
+void	update_player_position(t_game *game, int next_x, int next_y)
 {
-	game->player.health = HEALTH;
-	game->player.steps = 0;
-	game->player.move_up = 0;
-	game->player.move_down = 0;
-	game->player.move_left = 0;
-	game->player.move_right = 0;
-	game->player.move_sprite_index = 0;
+	if (game->player.pos_x != next_x || game->player.pos_y != next_y)
+	{
+		game->player.steps += 1;
+		ft_printf("Steps: %d\n", game->player.steps);
+	}
+	game->player.pos_x = next_x;
+	game->player.pos_y = next_y;
+}
+
+void	check_surroundings(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2)
+{
+	check_collectible(game, map_x1, map_y1);
+	check_collectible(game, map_x2, map_y1);
+	check_collectible(game, map_x1, map_y2);
+	check_collectible(game, map_x2, map_y2);
+	check_exit(game, map_x1, map_y1);
+	check_exit(game, map_x2, map_y1);
+	check_exit(game, map_x1, map_y2);
+	check_exit(game, map_x2, map_y2);
+}
+
+int	is_collision(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2)
+{
+	return (game->map.map[map_y1][map_x1] == '1' || game->map.map[map_y1][map_x2] == '1' ||
+			game->map.map[map_y2][map_x1] == '1' || game->map.map[map_y2][map_x2] == '1');
+}
+
+void	calculate_next_position(t_game *game, int *next_x, int *next_y)
+{
+	*next_x = game->player.pos_x;
+	*next_y = game->player.pos_y;
+	if (game->player.move_up)
+		*next_y -= MOVE_SPEED;
+	if (game->player.move_down)
+		*next_y += MOVE_SPEED;
+	if (game->player.move_left)
+		*next_x -= MOVE_SPEED;
+	if (game->player.move_right)
+		*next_x += MOVE_SPEED;
 }
 
 void	ft_player(t_game *game)
 {
-	int			next_x;
-	int			next_y;
+	int	next_x;
+	int	next_y;
+	int	map_x1, map_y1, map_x2, map_y2;
 
-	next_x = game->player.pos_x;
-	next_y = game->player.pos_y;
-	// Calculate next position based on input
-	if (game->player.move_up)
-		next_y -= MOVE_SPEED;
-	if (game->player.move_down)
-		next_y += MOVE_SPEED;
-	if (game->player.move_left)
-		next_x -= MOVE_SPEED;
-	if (game->player.move_right)
-		next_x += MOVE_SPEED;
+	calculate_next_position(game, &next_x, &next_y);
 
-	// Calculate map indices for the next position
-	int map_x1 = next_x / PIXEL;
-	int map_y1 = next_y / PIXEL;
-	int map_x2 = (next_x + PIXEL - 1) / PIXEL;
-	int map_y2 = (next_y + PIXEL - 1) / PIXEL;
+	map_x1 = next_x / PIXEL;
+	map_y1 = next_y / PIXEL;
+	map_x2 = (next_x + PIXEL - 1) / PIXEL;
+	map_y2 = (next_y + PIXEL - 1) / PIXEL;
 
-	// Check for collision with walls
-	if (game->map.map[map_y1][map_x1] != '1' && game->map.map[map_y1][map_x2] != '1' &&
-		game->map.map[map_y2][map_x1] != '1' && game->map.map[map_y2][map_x2] != '1')
+	if (!is_collision(game, map_x1, map_y1, map_x2, map_y2))
 	{
-		// Check for collectibles
-		check_collectible(game, map_x1, map_y1);
-		check_collectible(game, map_x2, map_y1);
-		check_collectible(game, map_x1, map_y2);
-		check_collectible(game, map_x2, map_y2);
-
-		// Check for exit
-		check_exit(game, map_x1, map_y1);
-		check_exit(game, map_x2, map_y1);
-		check_exit(game, map_x1, map_y2);
-		check_exit(game, map_x2, map_y2);
-
-		if(game->player.pos_x != next_x || game->player.pos_y != next_y)
-		{
-			game->player.steps += 1;
-			ft_printf("Steps: %d\n", game->player.steps);
-		}
-		// Update player position
-		game->player.pos_x = next_x;
-		game->player.pos_y = next_y;
+		check_surroundings(game, map_x1, map_y1, map_x2, map_y2);
+		update_player_position(game, next_x, next_y);
 	}
-	// Render the player
+
 	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
 }
+
 
 void	sprite_player_up(t_game *game, long long now)
 {

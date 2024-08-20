@@ -140,4 +140,12 @@ void	fps(t_game *game);
 void	ft_exit(t_game *game, long long now);
 void	ft_init_collectible(t_game *game);
 
+void	count_enemies(t_game *game);
+void	init_enemies(t_game *game);
+void	ft_check_monsters(t_game *game);
+void	default_enemy(t_enemy *enemy, int w, int h);
+void	enemy_atk(t_game *game, int x, int y);
+int	is_valid_move(t_game *game, int new_x, int new_y);
+void	move_monsters(t_game *game);
+
 #endif

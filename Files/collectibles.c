@@ -53,6 +53,7 @@ void	ft_init_collectible(t_game *game)
 	int	w;
 	int	h;
 
+	h = 0;
 	collectible_index = 0;
 	game->map.collectibles = malloc(game->map.n_collectible * sizeof(t_collectible *));
 	if (!game->map.collectibles)
@@ -60,9 +61,10 @@ void	ft_init_collectible(t_game *game)
 		fprintf(stderr, "Failed to allocate memory for collectibles\n");
 		exit(EXIT_FAILURE);
 	}
-	for (h = 0; h < game->map.height; h++)
+	while (h < game->map.height)
 	{
-		for (w = 0; w < game->map.width; w++)
+		w = 0;
+		while (w < game->map.width)
 		{
 			if (game->map.map[h][w] == 'C')
 			{
@@ -78,6 +80,8 @@ void	ft_init_collectible(t_game *game)
 				collectible->collected = 0;
 				game->map.collectibles[collectible_index++] = collectible;
 			}
+			w++;
 		}
+		h++;
 	}
 }

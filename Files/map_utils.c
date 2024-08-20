@@ -86,6 +86,7 @@ int	check_char(t_game *game)
 			if (!(game->map.map[i][j] == '0'))
 				if (!(game->map.map[i][j] == 'P' || game->map.map[i][j] == 'C'
 				|| game->map.map[i][j] == 'E' || game->map.map[i][j] == '1'
+				|| game->map.map[i][j] == 'F'
 				|| (i == game->map.height && game->map.map[i][j] == '\n')))
 					return (1);
 			if (i == game->map.height && game->map.map[i][j] != '\n' )

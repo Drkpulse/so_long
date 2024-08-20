@@ -15,7 +15,7 @@ int	game_loop(t_game *game)
 		fill_map(game->mlx, game->win, game->map);
 		ft_collectible(game, now);
 		ft_exit(game, now);
-		//move_monsters(game);
+		move_monsters(game);
 		sprite_player_up(game, now);
 		ft_player(game);
 		if (DEBUG)
