@@ -15,7 +15,7 @@ int	game_loop(t_game *game)
 		fill_map(game->mlx, game->win, game->map);
 		ft_collectible(game, now);
 		ft_exit(game, now);
-		move_monsters(game);
+		update_monsters(game, now);
 		sprite_player_up(game, now);
 		ft_player(game);
 		if (DEBUG)
@@ -23,7 +23,6 @@ int	game_loop(t_game *game)
 			show_steps(game);
 			show_fps(game);
 		}
-
 		game->last_millitimestamp = now;
 	}
 	return (1);

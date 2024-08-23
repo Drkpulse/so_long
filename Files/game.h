@@ -49,20 +49,19 @@ typedef struct s_player
 	int		move_down;
 	int		move_left;
 	int		move_right;
+	int		direction;
 	int		attack;
 	int		current_sprite;
 	int		move_sprite_index;
 	int		portal_sprite_index;
-	void	*sprites[15];
+	void	*sprites[23];
 }			t_player;
 
 typedef struct s_enemy
 {
 	int		pos_x;
 	int		pos_y;
-	int		direction;
 	int		frame;
-	int		dead;
 }			t_enemy;
 
 typedef struct s_collectible
@@ -84,12 +83,12 @@ typedef struct s_map
 	int				n_collectible;
 	int				n_collected;
 	t_collectible	**collectibles;
-	void			*collectible_sprite[15];
+	void			*collectible_sprite[11];
 	t_enemy			**enemies;
-	void			*enemies_sprite[5];
-	void			*window_sprite[15];
+	void			*enemies_sprite[8];
+	void			*window_sprite[11];
 	int				n_portal;
-	void			*portal_sprites[10];
+	void			*portal_sprites[9];
 	int				width;
 	int				height;
 }					t_map;
@@ -145,7 +144,7 @@ void	init_enemies(t_game *game);
 void	ft_check_monsters(t_game *game);
 void	default_enemy(t_enemy *enemy, int w, int h);
 void	enemy_atk(t_game *game, int x, int y);
-int	is_valid_move(t_game *game, int new_x, int new_y);
-void	move_monsters(t_game *game);
+void	update_monsters(t_game *game, long long now);
+void	check_enemy(t_game *game, int map_x, int map_y);
 
 #endif
