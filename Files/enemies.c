@@ -117,4 +117,3 @@ void	update_monsters(t_game *game, long long now)
 	if (diff_millisecs > 120)
 		last_fire_update = now;
 }
-

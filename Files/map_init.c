@@ -100,4 +100,3 @@ void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 	}
 }
 
-

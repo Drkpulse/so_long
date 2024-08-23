@@ -32,5 +32,6 @@ int handle_keyrelease(int key, t_game *game)
 int close_window(t_game *game)
 {
 	mlx_destroy_window(game->mlx, game->win);
+	ft_leave(game);
 	exit(EXIT_SUCCESS);
 }

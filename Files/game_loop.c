@@ -23,6 +23,7 @@ int	game_loop(t_game *game)
 			show_steps(game);
 			show_fps(game);
 		}
+
 		game->last_millitimestamp = now;
 	}
 	return (1);

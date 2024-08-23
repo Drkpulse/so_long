@@ -112,17 +112,20 @@ void	sprite_player_up(t_game *game, long long now)
 	long long diff_millisecs;
 
 	diff_millisecs = now - last_player_update;
-	t_player one = game->player;
+
+	// Update the sprite only if 120 milliseconds have passed
 	if (diff_millisecs > 120)
 	{
-		if (one.move_up || one.move_down || one.move_left || one.move_right)
-			one.move_sprite_index < 10 && one.move_sprite_index > 2)
-				one.move_sprite_index++;
-		else
-			if (one.move_sprite_index < 2)
-				one.move_sprite_index++;
+		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
+			if (game->player.move_sprite_index < 10)
+				game->player.move_sprite_index++;
 			else
-				one.move_sprite_index = 0;
+				game->player.move_sprite_index = 3;
+		else
+			if (game->player.move_sprite_index < 2)
+				game->player.move_sprite_index++;
+			else
+				game->player.move_sprite_index = 0;
 		last_player_update = now;
 	}
 }
@@ -151,5 +154,3 @@ void	check_enemy(t_game *game, int map_x, int map_y)
 			exit(EXIT_SUCCESS);
 	}
 }
-
-

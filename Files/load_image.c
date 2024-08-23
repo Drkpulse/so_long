@@ -1,15 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   load_image.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jsoeferr < joseferr@student.42porto.com    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/22 14:20:33 by jsoeferr          #+#    #+#             */
-/*   Updated: 2024/08/22 14:20:33 by jsoeferr         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
+// load_image.c
 #include "game.h"
 
 void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
@@ -27,6 +16,7 @@ void	load_xpm_sprite(t_game *game, int i, int sprite_type, char* sprite_path)
 		game->map.collectible_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
 	if (sprite_type == 5)
 		game->map.enemies_sprite[i] = mlx_xpm_file_to_image(game->mlx, sprite_path, &pixel, &pixel);
+
 }
 
 int	ft_load_sprite(t_game *game, int n_sprt, int sprite_type, char *path)
@@ -58,13 +48,12 @@ int	ft_init_sprite(t_game *game)
 		return (1);
 	if(ft_load_sprite(game, 9, 2, "assets/exit/exit"))
 		return (1);
-	if(ft_load_sprite(game, 22, 3, "assets/character/char"))
+	if(ft_load_sprite(game, 14, 3, "assets/character/char"))
 		return (1);
 	if(ft_load_sprite(game, 11, 4, "assets/collect/coin"))
 		return (1);
-	if(ft_load_sprite(game, 8, 5, "assets/enemie/fire"))
+	if(ft_load_sprite(game, 8, 5, "assets/enemy/fire"))
 		return (1);
 	return (0);
 }
-
 

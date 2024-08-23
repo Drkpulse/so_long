@@ -146,5 +146,6 @@ void	default_enemy(t_enemy *enemy, int w, int h);
 void	enemy_atk(t_game *game, int x, int y);
 void	update_monsters(t_game *game, long long now);
 void	check_enemy(t_game *game, int map_x, int map_y);
+void	ft_leave(t_game *game);
 
 #endif
