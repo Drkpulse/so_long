@@ -74,9 +74,7 @@ void	default_enemy(t_enemy *enemy, int w, int h)
 {
 	enemy->pos_x = w;
 	enemy->pos_y = h;
-	enemy->frame = rand() % 10;
-	enemy->dead = 0;
-	enemy->direction = rand() % 4;
+	enemy->frame = rand() % 8;
 }
 
 
@@ -88,55 +86,35 @@ void	enemy_atk(t_game *game, int x, int y)
 	while (i < game->map.n_enemies)
 	{
 		t_enemy *enemies = game->map.enemies[i];
-		if (enemies->pos_x == x && enemies->pos_y == y && !enemies->dead)
-		{
+		if (enemies->pos_x == x && enemies->pos_y == y)
 			game->player.health--;
-			enemies->dead = 1;
-		}
 		i++;
 	}
 }
 
-int	is_valid_move(t_game *game, int new_x, int new_y)
+void	update_monsters(t_game *game, long long now)
 {
-	return (new_x / PIXEL >= 0 && new_x / PIXEL < game->map.width &&
-			new_y / PIXEL >= 0 && new_y / PIXEL < game->map.height);
-}
+	int					i;
+	static long long	last_fire_update = 0;
+	long long			diff_millisecs;
 
-void	move_monsters(t_game *game)
-{
-	int	i;
-
+	diff_millisecs = now - last_fire_update;
 	i = 0;
 	while (i < game->map.n_enemies)
 	{
 		t_enemy *enemy = game->map.enemies[i];
-		if (!enemy->dead)
+				mlx_put_image_to_window(game->mlx, game->win, game->map.enemies_sprite[enemy->frame],
+				enemy->pos_x * PIXEL, enemy->pos_y * PIXEL);
+		if (diff_millisecs > 120)
 		{
-			int new_x = enemy->pos_x;
-			int new_y = enemy->pos_y;
-			ft_printf("eny_x: %d, eny_y: %d \n", enemy->pos_x, enemy->pos_y);
-
-			if (enemy->direction == 0)
-				new_y -= MOVE_SPEED;
-			else if (enemy->direction == 1)
-				new_y += MOVE_SPEED;
-			else if (enemy->direction == 2)
-				new_x -= MOVE_SPEED;
-			else if (enemy->direction == 3)
-				new_x += MOVE_SPEED;
-
-			if (is_valid_move(game, new_x, new_y))
-			{
-				enemy->pos_x = new_x;
-				enemy->pos_y = new_y;
-			}
+			if (enemy->frame < 7)
+				enemy->frame++;
 			else
-				enemy->direction = rand() % 4;
-			if (!enemy->dead)
-				mlx_put_image_to_window(game->mlx, game->win, game->map.enemies_sprite[0], enemy->pos_x, enemy->pos_y);
+				enemy->frame = 0;
 		}
 		i++;
 	}
+	if (diff_millisecs > 120)
+		last_fire_update = now;
 }
 

@@ -1,5 +1,5 @@
 /* XPM */
-static char *_c8bca08f6464750e805654aeb7434ffOR40HqSL4WToRu35[] = {
+static char *aa35854c260848a8f9fcbadb9ac8894extvaV2yb11g5R20E[] = {
 /* columns rows colors chars-per-pixel */
 "32 32 6 1 ",
 "  c None",
@@ -9,6 +9,7 @@ static char *_c8bca08f6464750e805654aeb7434ffOR40HqSL4WToRu35[] = {
 "O c #BC00BC",
 "+ c white",
 /* pixels */
+"                                ",
 "                                ",
 "                                ",
 "                                ",
@@ -30,15 +31,14 @@ static char *_c8bca08f6464750e805654aeb7434ffOR40HqSL4WToRu35[] = {
 "          XoOOOOOOOOOoX         ",
 "          XOOOOOOOOOOOoX        ",
 "          XOOOOOOOOOOOoX        ",
-"         XoOOOOoOOOOOOoX        ",
-"         XooOOoXoOOOOOooX       ",
-"         XooOooXooOoOoooX       ",
-"          XoooX.XooOooooX       ",
-"          XXooX..XooooXoX       ",
-"          XooX...XooXXXX        ",
-"           XXX...XXX            ",
-"              ....              ",
-"               ..               ",
-"                ..              ",
-"                .               "
+"          XoOOoXoOOOOOOoX       ",
+"          XoOooXooOoOOooX       ",
+"         XoooooXXooOooooX       ",
+"         XooooX..XooooXXX       ",
+"          XXooX..XooXX          ",
+"           XXX.  XXX            ",
+"             ..   ..            ",
+"             .     .            ",
+"              .    .            ",
+"              .                 "
 };

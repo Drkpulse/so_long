@@ -1,5 +1,5 @@
 /* XPM */
-static char *_c8bca08f6464750e805654aeb7434ffOR40HqSL4WToRu35[] = {
+static char *_abf1e734e82450a9d116029c613c36cOKiueTa7GeBCP4g6[] = {
 /* columns rows colors chars-per-pixel */
 "32 32 6 1 ",
 "  c None",
@@ -39,6 +39,6 @@ static char *_c8bca08f6464750e805654aeb7434ffOR40HqSL4WToRu35[] = {
 "           XXX...XXX            ",
 "              ....              ",
 "               ..               ",
-"                ..              ",
-"                .               "
+"               . .              ",
+"               .                "
 };

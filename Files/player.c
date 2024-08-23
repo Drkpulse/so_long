@@ -57,6 +57,10 @@ void	check_surroundings(t_game *game, int map_x1, int map_y1, int map_x2, int ma
 	check_exit(game, map_x2, map_y1);
 	check_exit(game, map_x1, map_y2);
 	check_exit(game, map_x2, map_y2);
+	check_enemy(game, map_x1, map_y1);
+	check_enemy(game, map_x2, map_y1);
+	check_enemy(game, map_x1, map_y2);
+	check_enemy(game, map_x2, map_y2);
 }
 
 int	is_collision(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2)
@@ -108,20 +112,17 @@ void	sprite_player_up(t_game *game, long long now)
 	long long diff_millisecs;
 
 	diff_millisecs = now - last_player_update;
-
-	// Update the sprite only if 120 milliseconds have passed
+	t_player one = game->player;
 	if (diff_millisecs > 120)
 	{
-		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
-			if (game->player.move_sprite_index < 10)
-				game->player.move_sprite_index++;
-			else
-				game->player.move_sprite_index = 3;
+		if (one.move_up || one.move_down || one.move_left || one.move_right)
+			one.move_sprite_index < 10 && one.move_sprite_index > 2)
+				one.move_sprite_index++;
 		else
-			if (game->player.move_sprite_index < 2)
-				game->player.move_sprite_index++;
+			if (one.move_sprite_index < 2)
+				one.move_sprite_index++;
 			else
-				game->player.move_sprite_index = 0;
+				one.move_sprite_index = 0;
 		last_player_update = now;
 	}
 }
@@ -139,6 +140,14 @@ void	check_exit(t_game *game, int map_x, int map_y)
 	if (game->map.map[map_y][map_x] == 'E')
 	{
 		if ((game->map.n_collectible - game->map.n_collected) == 0)
+			exit(EXIT_SUCCESS);
+	}
+}
+
+void	check_enemy(t_game *game, int map_x, int map_y)
+{
+	if (game->map.map[map_y][map_x] == 'F')
+	{
 			exit(EXIT_SUCCESS);
 	}
 }
