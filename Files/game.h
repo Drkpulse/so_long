@@ -72,6 +72,14 @@ typedef struct s_collectible
 	int		collected;
 }				t_collectible;
 
+typedef struct s_flood_fill
+{
+	char	**map;
+	int		**visited;
+	int		width;
+	int		height;
+}	t_flood_fill;
+
 typedef struct s_map
 {
 	int				map_fd;
@@ -147,5 +155,7 @@ void	enemy_atk(t_game *game, int x, int y);
 void	update_monsters(t_game *game, long long now);
 void	check_enemy(t_game *game, int map_x, int map_y);
 void	ft_leave(t_game *game);
+
+int		map_possible(t_game *game);
 
 #endif

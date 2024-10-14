@@ -40,6 +40,22 @@ int	map_to_lst(t_game *game)
 	return (0);
 }
 
+void free_lst_map(t_game *game)
+{
+	t_list *current;
+	t_list *next;
+
+	current = game->map.lst_map;
+	while (current)
+	{
+		next = current->next;
+		free(current->content);
+		free(current);
+		current = next;
+	}
+	game->map.lst_map = NULL;
+}
+
 int	map_to_two_d(t_game *game)
 {
 	int	i;
@@ -50,15 +66,16 @@ int	map_to_two_d(t_game *game)
 		return (1);
 	game->map.map = ft_calloc(game->map.height + 1, sizeof(char *));
 	if (!game->map.map)
-		exit(EXIT_FAILURE);
+		return (1);
 	while(game->map.lst_map)
 	{
 		game->map.map[i] = ft_strdup(game->map.lst_map->content);
 		if (!game->map.map[i])
-			exit(EXIT_FAILURE);
+			return (1);
 		i++;
 		game->map.lst_map = game->map.lst_map->next;
 	}
+	free_lst_map(game);
 	game->map.width = ft_strlen(game->map.map[0]) - 2;
 	if (game->map.width < 4)
 		return (1);

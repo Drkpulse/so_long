@@ -18,6 +18,7 @@ int	ft_init_map(int argc, char **argv, t_game *game)
 		janitor(7);
 	if (count_char(game))
 		janitor(8);
+
 	return (0);
 }
 
