@@ -18,7 +18,10 @@ void	ft_player(t_game *game)
 {
 	int	next_x;
 	int	next_y;
-	int	map_x1, map_y1, map_x2, map_y2;
+	int	map_x1;
+	int map_y1;
+	int map_x2;
+	int map_y2;
 
 	calculate_next_position(game, &next_x, &next_y);
 
@@ -67,7 +70,6 @@ void	sprite_player_up(t_game *game, long long now)
 
 	diff_millisecs = now - last_player_update;
 
-	// Update the sprite only if 120 milliseconds have passed
 	if (diff_millisecs > 120)
 	{
 		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)

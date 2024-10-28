@@ -40,7 +40,7 @@ void	check_exit(t_game *game, int map_x, int map_y)
 	{
 		if ((game->map.n_collectible - game->map.n_collected) == 0)
 		{
-			ft_printf("Yay you WON!!!\n");
+			ft_printf("Passaste o meu so_long! Boa!\n");
 			close_window(game);
 		}
 

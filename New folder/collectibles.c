@@ -55,10 +55,7 @@ void	ft_init_collectible(t_game *game)
 	collectible_index = 0;
 	game->map.collectibles = malloc(game->map.n_collectible * sizeof(t_collectible *));
 	if (!game->map.collectibles)
-	{
-		fprintf(stderr, "Failed to allocate memory for collectibles\n");
-		exit(EXIT_FAILURE);
-	}
+		janitor(10);
 	while (h < game->map.rows)
 	{
 		w = 0;
@@ -80,10 +77,7 @@ t_collectible	*ft_create_collectible(int w, int h)
 
 	collectible = malloc(sizeof(t_collectible));
 	if (!collectible)
-	{
-		fprintf(stderr, "Failed to allocate memory for a collectible\n");
-		exit(EXIT_FAILURE);
-	}
+		janitor(10);
 	collectible->pos_x = w;
 	collectible->pos_y = h;
 	collectible->frame = rand() % 10;

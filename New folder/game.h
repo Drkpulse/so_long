@@ -16,7 +16,7 @@
 #define HEIGHT 600
 #define PIXEL 32
 #define MOVE_SPEED 1
-# define HEALTH 3
+#define HEALTH 3
 #define ESC 65307
 #define KEY_W 119
 #define KEY_A 97
@@ -125,7 +125,8 @@ int	map_to_two_d(t_game *game);
 int	map_rectangle(t_game *game);
 int	check_char(t_game *game);
 int	surrounded(t_game *game);
-int	count_char(t_game *game);
+int	count_char(t_game *game, char c);
+int	count_map_chars(t_game *game);
 int	map_possible(t_game *game);
 
 /* Window Management*/

@@ -11,9 +11,12 @@ void	janitor(int error)
 		"check_char",
 		"surrounded",
 		"count_char",
+		"Failed to allocate memory for Enemies",
+		"Failed to allocate memory for collectibles",
+		"Memory allocation failed for visited.",
 	};
 
-	if (error >= 1 && error <= 8)
+	if (error >= 1 && error <= 11)
 		printf("%s\n", messages[error - 1]);
 	else
 		printf("Unknown error\n");
@@ -36,9 +39,13 @@ void free_list(t_list *lst)
 
 void free_map(char **map, int rows)
 {
-	for (int i = 0; i < rows; i++)
+	int i;
+
+	i = 0;
+	while (i < rows)
 	{
 		free(map[i]);
+		i++;
 	}
 	free(map);
 }

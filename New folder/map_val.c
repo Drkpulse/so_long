@@ -16,7 +16,7 @@ int	ft_validate_map(int argc, char **argv, t_game *game)
 		janitor(6);
 	if (surrounded(game))
 		janitor(7);
-	if (count_char(game))
+	if (count_map_chars(game))
 		janitor(8);
 	if (map_possible(game))
 		janitor(8);

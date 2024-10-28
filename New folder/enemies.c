@@ -16,10 +16,7 @@ void	init_enemies(t_game *game)
 	ft_printf("N of Enemies: %d\n", game->map.n_enemies);
 	game->map.enemies = malloc(game->map.n_enemies * sizeof(t_enemy *));
 	if (!game->map.enemies)
-	{
-		fprintf(stderr, "Failed to allocate memory for collectibles\n");
-		exit(EXIT_FAILURE);
-	}
+		janitor(9);
 }
 
 void	ft_check_monsters(t_game *game)
@@ -40,10 +37,7 @@ void	ft_check_monsters(t_game *game)
 			{
 				t_enemy *enemy = malloc(sizeof(t_enemy));
 				if (!enemy)
-				{
-					fprintf(stderr, "Failed to allocate memory for a enemies\n");
-					exit(EXIT_FAILURE);
-				}
+					janitor(9);
 				default_enemy(enemy, w, h);
 				game->map.enemies[enemy_index++] = enemy;
 			}
