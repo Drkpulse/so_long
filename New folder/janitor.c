@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   janitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:52:04 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:08:30 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 void	janitor(int error)
 {
-	const char *messages[] = {
+	const char	*messages[] = {
 		"Invalid Arguments",
 		"Invalid Map File",
 		"map_to_lst",
@@ -20,13 +32,12 @@ void	janitor(int error)
 		printf("%s\n", messages[error - 1]);
 	else
 		printf("Unknown error\n");
-
 	exit(EXIT_FAILURE);
 }
 
-void free_list(t_list *lst)
+void	free_list(t_list *lst)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	while (lst)
 	{
@@ -37,9 +48,9 @@ void free_list(t_list *lst)
 	}
 }
 
-void free_map(char **map, int rows)
+void	free_map(char **map, int rows)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < rows)
@@ -85,4 +96,3 @@ void	free_sprites(t_game *game, void **sprites, int count)
 		i++;
 	}
 }
-

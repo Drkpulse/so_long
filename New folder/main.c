@@ -6,9 +6,10 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/08/05 15:13:43 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:52:32 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "game.h"
 
 int	main(int argc, char **argv)

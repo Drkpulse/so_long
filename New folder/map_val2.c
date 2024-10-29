@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_val2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:52:20 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:21:37 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
-int check_char(t_game *game)
+int	check_char(t_game *game)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	while (i < game->map.rows)
@@ -15,7 +27,8 @@ int check_char(t_game *game)
 				game->map.map[i][j] != 'C' && game->map.map[i][j] != 'E' &&
 				game->map.map[i][j] != '1' && game->map.map[i][j] != 'F')
 			{
-				ft_printf("Invalid character at [%d][%d]: %c\n", i, j, game->map.map[i][j]);
+				ft_printf("Invalid character at [%d][%d]: %c\n"\
+					, i, j, game->map.map[i][j]);
 				return (1);
 			}
 			ft_printf("%c", game->map.map[i][j]);
@@ -26,8 +39,6 @@ int check_char(t_game *game)
 	}
 	return (0);
 }
-
-
 
 int	surrounded(t_game *game)
 {
@@ -44,7 +55,8 @@ int	surrounded(t_game *game)
 	i = 0;
 	while (i < game->map.rows - 1)
 	{
-		if (game->map.map[i][0] != '1' && game->map.map[i][game->map.columns - 1] != '1')
+		if (game->map.map[i][0] != '1' && game->map.map[i] \
+			[game->map.columns - 1] != '1')
 			return (1);
 		i++;
 	}
@@ -80,7 +92,6 @@ int	count_char(t_game *game, char c)
 	return (count);
 }
 
-
 int	count_map_chars(t_game *game)
 {
 	int	exit;
@@ -90,9 +101,7 @@ int	count_map_chars(t_game *game)
 	exit = count_char(game, 'E');
 	game->map.n_collectible = count_char(game, 'C');
 	game->map.n_enemies = count_char(game, 'F');
-	if ( p_start != 1 || exit != 1 || game->map.n_collectible < 1)
+	if (p_start != 1 || exit != 1 || game->map.n_collectible < 1)
 		return (1);
 	return (0);
 }
-
-

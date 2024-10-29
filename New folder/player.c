@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   player.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:52:24 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:30:09 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 int	ft_init_player(t_game *game)
@@ -19,23 +31,22 @@ void	ft_player(t_game *game)
 	int	next_x;
 	int	next_y;
 	int	map_x1;
-	int map_y1;
-	int map_x2;
-	int map_y2;
+	int	map_y1;
+	int	map_x2;
+	int	map_y2;
 
 	calculate_next_position(game, &next_x, &next_y);
-
 	map_x1 = next_x / PIXEL;
 	map_y1 = next_y / PIXEL;
 	map_x2 = (next_x + PIXEL - 1) / PIXEL;
 	map_y2 = (next_y + PIXEL - 1) / PIXEL;
-
 	if (!is_collision(game, map_x1, map_y1, map_x2, map_y2))
 	{
 		check_surroundings(game, map_x1, map_y1, map_x2, map_y2);
 		update_player_position(game, next_x, next_y);
 	}
-	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
+	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites \
+	[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
 }
 
 void	update_player_position(t_game *game, int next_x, int next_y)
@@ -65,23 +76,24 @@ void	calculate_next_position(t_game *game, int *next_x, int *next_y)
 
 void	sprite_player_up(t_game *game, long long now)
 {
-	static long long last_player_update = 0;
-	long long diff_millisecs;
+	static long long	last_player_update;
+	long long			diff_millisecs;
 
 	diff_millisecs = now - last_player_update;
-
+	last_player_update = 0;
 	if (diff_millisecs > 120)
 	{
-		if (game->player.move_up || game->player.move_down || game->player.move_left || game->player.move_right)
+		if (game->player.move_up || game->player.move_down \
+			|| game->player.move_left || game->player.move_right)
 			if (game->player.move_sprite_index < 10)
 				game->player.move_sprite_index++;
-			else
-				game->player.move_sprite_index = 3;
+		else
+			game->player.move_sprite_index = 3;
 		else
 			if (game->player.move_sprite_index < 2)
 				game->player.move_sprite_index++;
-			else
-				game->player.move_sprite_index = 0;
+		else
+			game->player.move_sprite_index = 0;
 		last_player_update = now;
 	}
 }

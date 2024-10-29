@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_flood.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:52:11 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:17:21 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 void print_visited(t_flood_fill *f)
@@ -10,21 +22,21 @@ void print_visited(t_flood_fill *f)
 	}
 }
 
-void flood_fill(t_flood_fill *flood, int columns, int rows)
+void	flood_fill(t_flood_fill *flood, int columns, int rows)
 {
 	if (flood->map == NULL || flood->visited == NULL)
 	{
 		printf("Error: flood->map or flood->visited is uninitialized!\n");
-		return;
+		return ;
 	}
-	if (columns < 0 || rows < 0 || columns >= flood->columns || rows >= flood->rows)
+	if (columns < 0 || rows < 0 || columns >= flood->columns \
+	|| rows >= flood->rows)
 	{
 		printf("Out of bounds: x=%d, y=%d\n", columns, rows);
-		return;
+		return ;
 	}
 	if (flood->map[rows][columns] == '1' || flood->visited[rows][columns])
-		return;
-
+		return ;
 	flood->visited[rows][columns] = 1;
 	flood_fill(flood, columns + 1, rows);
 	flood_fill(flood, columns - 1, rows);
@@ -32,9 +44,9 @@ void flood_fill(t_flood_fill *flood, int columns, int rows)
 	flood_fill(flood, columns, rows - 1);
 }
 
-void free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
+void	free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
 {
-	int i;
+	int	i;
 
 	if (flag == 1)
 	{
@@ -42,7 +54,6 @@ void free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
 		while (i < flood->rows)
 			free(flood->visited[i++]);
 		free(flood->visited);
-
 		i = 0;
 		while (i < game->map.rows)
 			free(game->map.map[i++]);
@@ -58,9 +69,10 @@ void free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
 	}
 }
 
-static void init_visited(t_flood_fill *f)
+static void	init_visited(t_flood_fill *f)
 {
-	int i, j;
+	int	i;
+	int	j;
 
 	f->visited = (int **)ft_calloc(f->rows, sizeof(int *));
 	if (!f->visited)
@@ -81,7 +93,6 @@ static void init_visited(t_flood_fill *f)
 	}
 }
 
-
 static void	check_reachability(t_game *game, t_flood_fill *flood)
 {
 	int	i;
@@ -98,7 +109,7 @@ static void	check_reachability(t_game *game, t_flood_fill *flood)
 					(!flood->visited[i][j]))
 			{
 				ft_printf("Error\n%c element is not reachable\n",
-						game->map.map[i][j]);
+					game->map.map[i][j]);
 				flag = 1;
 				free_flood_mem(game, flood, flag);
 			}
@@ -109,7 +120,6 @@ static void	check_reachability(t_game *game, t_flood_fill *flood)
 	flag = 0;
 	free_flood_mem(game, flood, flag);
 }
-
 
 int	map_possible(t_game *game)
 {
@@ -124,11 +134,12 @@ int	map_possible(t_game *game)
 	print_visited(&flood);
 	if (flood.visited[game->map.start_y][game->map.start_x] == 0)
 	{
-		ft_printf("Error\nPlayer 'P' is either surrounded by walls or trapped\n");
+		ft_printf("Error\nPlayer 'P' is either surrounded \
+		by walls or trapped\n");
 		flag = 1;
 		free_flood_mem(game, &flood, flag);
-		return(1);
+		return (1);
 	}
 	check_reachability(game, &flood);
-	return(0);
+	return (0);
 }

@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   game_loop.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:51:53 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:05:58 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 int	game_loop(t_game *game)
 {
-	long long now;
-	long long diff_millisecs;
+	long long	now;
+	long long	diff_millisecs;
 
 	now = millitimestamp();
 	diff_millisecs = now - game->last_millitimestamp;
@@ -27,18 +39,38 @@ int	game_loop(t_game *game)
 	return (1);
 }
 
-void	ft_exit(t_game *game, long long now)
+void	ft_up_exit(t_game *game)
 {
 	int	i;
 	int	j;
 	int	end;
-	static long long last_portal_update = 0;
-	long long diff_millisecs;
-
-	diff_millisecs = now - last_portal_update;
 
 	i = 0;
 	end = game->map.n_collectible - game->map.n_collected;
+	while (i < game->map.rows)
+	{
+		j = 0;
+		while (j < game->map.columns)
+		{
+			if (game->map.map[i][j] == 'E' && end != 0)
+				mlx_put_image_to_window(game->mlx, game->win, \
+				game->map.portal_sprites[0], j * PIXEL, i * PIXEL);
+			else if (game->map.map[i][j] == 'E' && end == 0)
+				mlx_put_image_to_window(game->mlx, game->win, \
+				game->map.portal_sprites[game->map.n_portal] \
+				, j * PIXEL, i * PIXEL);
+			j++;
+		}
+		i++;
+	}
+}
+
+void	ft_exit(t_game *game, long long now)
+{
+	static long long	last_portal_update = 0;
+	long long			diff_millisecs;
+
+	diff_millisecs = now - last_portal_update;
 	if (diff_millisecs > 150)
 	{
 		if (game->map.n_portal < 7)
@@ -47,18 +79,5 @@ void	ft_exit(t_game *game, long long now)
 			game->map.n_portal = 0;
 		last_portal_update = now;
 	}
-
-	while (i < game->map.rows)
-	{
-		j = 0;
-		while (j < game->map.columns)
-		{
-			if (game->map.map[i][j] == 'E' && end != 0)
-				mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[0], j * PIXEL, i * PIXEL);
-			else if (game->map.map[i][j] == 'E' && end == 0)
-				mlx_put_image_to_window(game->mlx, game->win, game->map.portal_sprites[game->map.n_portal], j * PIXEL, i * PIXEL);
-			j++;
-		}
-		i++;
-	}
+	ft_up_exit(game);
 }

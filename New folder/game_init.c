@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   game_init.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:51:51 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 19:59:57 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 void	ft_startup(t_game *game)
@@ -17,5 +29,6 @@ void	ft_startup(t_game *game)
 
 void	ft_init_window(t_game *game, char *path)
 {
-	game->win = mlx_new_window(game->mlx, game->map.columns * PIXEL, game->map.rows * PIXEL, path);
+	game->win = mlx_new_window(game->mlx, game->map.columns * \
+	PIXEL, game->map.rows * PIXEL, path);
 }

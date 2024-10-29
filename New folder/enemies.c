@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   enemies.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsoeferr < joseferr@student.42porto.com    +#+  +:+       +#+        */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/11 13:29:23 by jsoeferr          #+#    #+#             */
-/*   Updated: 2024/08/11 13:29:23 by jsoeferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:59:36 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "game.h"
 
 void	init_enemies(t_game *game)
@@ -21,9 +22,10 @@ void	init_enemies(t_game *game)
 
 void	ft_check_monsters(t_game *game)
 {
-	int	enemy_index;
-	int	w;
-	int	h;
+	int		enemy_index;
+	t_enemy	*enemy;
+	int		w;
+	int		h;
 
 	h = 0;
 	enemy_index = 0;
@@ -35,7 +37,7 @@ void	ft_check_monsters(t_game *game)
 		{
 			if (game->map.map[h][w] == 'F')
 			{
-				t_enemy *enemy = malloc(sizeof(t_enemy));
+				enemy = malloc(sizeof(t_enemy));
 				if (!enemy)
 					janitor(9);
 				default_enemy(enemy, w, h);
@@ -46,6 +48,7 @@ void	ft_check_monsters(t_game *game)
 		h++;
 	}
 }
+
 void	default_enemy(t_enemy *enemy, int w, int h)
 {
 	enemy->pos_x = w;
@@ -58,14 +61,16 @@ void	update_monsters(t_game *game, long long now)
 	int					i;
 	static long long	last_fire_update = 0;
 	long long			diff_millisecs;
+	t_enemy				*enemy;
 
 	diff_millisecs = now - last_fire_update;
 	i = 0;
 	while (i < game->map.n_enemies)
 	{
-		t_enemy *enemy = game->map.enemies[i];
-				mlx_put_image_to_window(game->mlx, game->win, game->map.enemies_sprite[enemy->frame],
-				enemy->pos_x * PIXEL, enemy->pos_y * PIXEL);
+		enemy = game->map.enemies[i];
+		mlx_put_image_to_window(game->mlx, game->win, \
+		game->map.enemies_sprite[enemy->frame],
+			enemy->pos_x * PIXEL, enemy->pos_y * PIXEL);
 		if (diff_millisecs > 120)
 		{
 			if (enemy->frame < 7)
@@ -81,12 +86,13 @@ void	update_monsters(t_game *game, long long now)
 
 void	free_enemies(t_game *game)
 {
-	int	i;
+	int		i;
+	t_enemy	*enemy;
 
 	i = 0;
 	while (i < game->map.n_enemies)
 	{
-		t_enemy *enemy = game->map.enemies[i];
+		enemy = game->map.enemies[i];
 		free(enemy);
 		i++;
 	}

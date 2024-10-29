@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   debug.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:51:43 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 20:43:41 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
-// Get timestamp in milliseconds
 long long	millitimestamp(void)
 {
 	struct timeval	timeval;
@@ -11,7 +22,6 @@ long long	millitimestamp(void)
 	return (microtime);
 }
 
-// Show FPS in the window
 void	show_fps(t_game *game)
 {
 	char	*debug_msg;
@@ -24,7 +34,6 @@ void	show_fps(t_game *game)
 	free(debug_msg);
 }
 
-// Calculate FPS
 void	fps(t_game *game)
 {
 	long long	now;
