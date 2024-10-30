@@ -28,26 +28,28 @@ int	ft_init_player(t_game *game)
 
 void	ft_player(t_game *game)
 {
-	int	next_x;
-	int	next_y;
-	int	map_x1;
-	int	map_y1;
-	int	map_x2;
-	int	map_y2;
+	int			next_x;
+	int			next_y;
+	t_hitbox	hitbox;
 
 	calculate_next_position(game, &next_x, &next_y);
-	map_x1 = next_x / PIXEL;
-	map_y1 = next_y / PIXEL;
-	map_x2 = (next_x + PIXEL - 1) / PIXEL;
-	map_y2 = (next_y + PIXEL - 1) / PIXEL;
-	if (!is_collision(game, map_x1, map_y1, map_x2, map_y2))
+
+	hitbox.map_x1 = next_x / PIXEL;
+	hitbox.map_y1 = next_y / PIXEL;
+	hitbox.map_x2 = (next_x + PIXEL - 1) / PIXEL;
+	hitbox.map_y2 = (next_y + PIXEL - 1) / PIXEL;
+
+	if (!is_collision(game, hitbox))
 	{
-		check_surroundings(game, map_x1, map_y1, map_x2, map_y2);
+		check_surroundings(game, hitbox);
 		update_player_position(game, next_x, next_y);
 	}
-	mlx_put_image_to_window(game->mlx, game->win, game->player.sprites \
-	[game->player.move_sprite_index], game->player.pos_x, game->player.pos_y);
+
+	mlx_put_image_to_window(game->mlx, game->win,
+		game->player.sprites[game->player.move_sprite_index],
+		game->player.pos_x, game->player.pos_y);
 }
+
 
 void	update_player_position(t_game *game, int next_x, int next_y)
 {

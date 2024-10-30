@@ -12,27 +12,32 @@
 
 #include "game.h"
 
-void	check_surroundings(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2)
+int	is_collision(t_game *game, t_hitbox hitbox)
 {
-	check_collectible(game, map_x1, map_y1);
-	check_collectible(game, map_x2, map_y1);
-	check_collectible(game, map_x1, map_y2);
-	check_collectible(game, map_x2, map_y2);
-	check_exit(game, map_x1, map_y1);
-	check_exit(game, map_x2, map_y1);
-	check_exit(game, map_x1, map_y2);
-	check_exit(game, map_x2, map_y2);
-	check_enemy(game, map_x1, map_y1);
-	check_enemy(game, map_x2, map_y1);
-	check_enemy(game, map_x1, map_y2);
-	check_enemy(game, map_x2, map_y2);
+	return (game->map.map[hitbox.map_y1][hitbox.map_x1] == '1' ||
+			game->map.map[hitbox.map_y1][hitbox.map_x2] == '1' ||
+			game->map.map[hitbox.map_y2][hitbox.map_x1] == '1' ||
+			game->map.map[hitbox.map_y2][hitbox.map_x2] == '1');
 }
 
-int	is_collision(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2)
+void	check_surroundings(t_game *game, t_hitbox hitbox)
 {
-	return (game->map.map[map_y1][map_x1] == '1' || game->map.map[map_y1][map_x2] == '1' ||
-			game->map.map[map_y2][map_x1] == '1' || game->map.map[map_y2][map_x2] == '1');
+	check_collectible(game, hitbox.map_x1, hitbox.map_y1);
+	check_collectible(game, hitbox.map_x2, hitbox.map_y1);
+	check_collectible(game, hitbox.map_x1, hitbox.map_y2);
+	check_collectible(game, hitbox.map_x2, hitbox.map_y2);
+
+	check_exit(game, hitbox.map_x1, hitbox.map_y1);
+	check_exit(game, hitbox.map_x2, hitbox.map_y1);
+	check_exit(game, hitbox.map_x1, hitbox.map_y2);
+	check_exit(game, hitbox.map_x2, hitbox.map_y2);
+
+	check_enemy(game, hitbox.map_x1, hitbox.map_y1);
+	check_enemy(game, hitbox.map_x2, hitbox.map_y1);
+	check_enemy(game, hitbox.map_x1, hitbox.map_y2);
+	check_enemy(game, hitbox.map_x2, hitbox.map_y2);
 }
+
 
 void	check_collectible(t_game *game, int map_x, int map_y)
 {

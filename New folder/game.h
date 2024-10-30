@@ -91,6 +91,14 @@ typedef struct s_flood_fill
 	int		rows;
 }	t_flood_fill;
 
+typedef struct s_hitbox
+{
+	int map_x1;
+	int map_y1;
+	int map_x2;
+	int map_y2;
+}	t_hitbox;
+
 typedef struct s_map
 {
 	int				map_fd;
