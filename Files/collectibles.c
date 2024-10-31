@@ -1,4 +1,15 @@
-// collectibles.c
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   collectibles.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/29 19:51:34 by joseferr          #+#    #+#             */
+/*   Updated: 2024/10/29 19:56:42 by joseferr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "game.h"
 
 void	ft_collectible(t_game *game, long long now)
@@ -14,9 +25,9 @@ void	ft_collectible(t_game *game, long long now)
 	{
 		collectible = game->map.collectibles[i];
 		if (!collectible->collected)
-		{
-			mlx_put_image_to_window(game->mlx, game->win, game->map.collectible_sprite[collectible->frame], collectible->pos_x * PIXEL, collectible->pos_y * PIXEL);
-		}
+			mlx_put_image_to_window(game->mlx, game->win, \
+			game->map.collectible_sprite[collectible->frame], \
+			collectible->pos_x * PIXEL, collectible->pos_y * PIXEL);
 		if (diff_millisecs > 120)
 		{
 			if (collectible->frame < 10)
@@ -30,16 +41,19 @@ void	ft_collectible(t_game *game, long long now)
 		last_collectible_update = now;
 }
 
-void	ft_collect(t_game *game, int x, int y)
+void	ft_collect(t_game *game, int rows, int columns)
 {
-	int	i;
+	int				i;
+	t_collectible	*collectible;
 
 	i = 0;
 	while (i < game->map.n_collectible)
 	{
-		t_collectible *collectible = game->map.collectibles[i];
-		if (collectible->pos_x == x && collectible->pos_y == y && !collectible->collected)
+		collectible = game->map.collectibles[i];
+		if (collectible->pos_x == rows && collectible->pos_y \
+		== columns && !collectible->collected)
 		{
+			ft_printf("+1 Coin!\n");
 			collectible->collected = 1;
 			game->map.n_collected++;
 		}
@@ -55,33 +69,51 @@ void	ft_init_collectible(t_game *game)
 
 	h = 0;
 	collectible_index = 0;
-	game->map.collectibles = malloc(game->map.n_collectible * sizeof(t_collectible *));
+	game->map.collectibles = malloc(game->map.n_collectible * \
+	sizeof(t_collectible *));
 	if (!game->map.collectibles)
-	{
-		fprintf(stderr, "Failed to allocate memory for collectibles\n");
-		exit(EXIT_FAILURE);
-	}
-	while (h < game->map.height)
+		janitor(10);
+	while (h < game->map.rows)
 	{
 		w = 0;
-		while (w < game->map.width)
+		while (w < game->map.columns)
 		{
 			if (game->map.map[h][w] == 'C')
 			{
-				t_collectible *collectible = malloc(sizeof(t_collectible));
-				if (!collectible)
-				{
-					fprintf(stderr, "Failed to allocate memory for a collectible\n");
-					exit(EXIT_FAILURE);
-				}
-				collectible->pos_x = w;
-				collectible->pos_y = h;
-				collectible->frame = rand() % 10;
-				collectible->collected = 0;
-				game->map.collectibles[collectible_index++] = collectible;
+				game->map.collectibles[collectible_index++] \
+				= ft_create_collectible(w, h);
 			}
 			w++;
 		}
 		h++;
 	}
+}
+
+t_collectible	*ft_create_collectible(int w, int h)
+{
+	t_collectible	*collectible;
+
+	collectible = malloc(sizeof(t_collectible));
+	if (!collectible)
+		janitor(10);
+	collectible->pos_x = w;
+	collectible->pos_y = h;
+	collectible->frame = rand() % 10;
+	collectible->collected = 0;
+	return (collectible);
+}
+
+void	free_collectibles(t_game *game)
+{
+	int				i;
+	t_collectible	*collectible;
+
+	i = 0;
+	while (i < game->map.n_collectible)
+	{
+		collectible = game->map.collectibles[i];
+		free(collectible);
+		i++;
+	}
+	free(game->map.collectibles);
 }

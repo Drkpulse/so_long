@@ -16,9 +16,9 @@ int	ft_validate_map(int argc, char **argv, t_game *game)
 {
 	(void)argv;
 	if (argc != 2)
-		free_mlx(game);
+		free_wrong_map(game);
 	if (open_map(argv[1], game))
-		free_mlx(game);
+		free_wrong_map(game);
 	if (map_to_lst(game))
 		janitor(3);
 	if (map_to_two_d(game))

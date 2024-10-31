@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 15:35:19 by joseferr          #+#    #+#             */
-/*   Updated: 2024/06/30 12:16:27 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 20:42:47 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 # include <stdarg.h>
 # include <limits.h>
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
-#endif
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
 
 //LIBC FUNCTIONS//
 int		ft_atoi(const char *str);
@@ -98,6 +98,6 @@ typedef struct s_print
 
 }					t_info;
 
-int					ft_printf(const char *text, ...);
+int		ft_printf(const char *text, ...);
 
 #endif

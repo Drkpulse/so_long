@@ -6,17 +6,18 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:25:43 by joseferr          #+#    #+#             */
-/*   Updated: 2024/08/05 15:13:43 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:52:32 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "game.h"
 
 int	main(int argc, char **argv)
 {
 	t_game	game;
 
-	ft_ready_game(&game);
-	ft_init_map(argc, argv, &game);
+	ft_startup(&game);
+	ft_validate_map(argc, argv, &game);
 	ft_init_window(&game, argv[1]);
 	ft_init_sprite(&game);
 	ft_init_player(&game);
@@ -25,5 +26,6 @@ int	main(int argc, char **argv)
 	hook_register(&game);
 	mlx_loop_hook(game.mlx, game_loop, &game);
 	mlx_loop(game.mlx);
+	free_map(game.map.map, game.map.rows);
 	exit(EXIT_SUCCESS);
 }
