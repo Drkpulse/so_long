@@ -36,7 +36,7 @@ void	janitor(int error)
 
 void	free_wrong_map(t_game *game)
 {
-	printf("Invalid Map File\n");
+	printf("Invalid Map\n");
 	if (game->mlx)
 	{
 		mlx_destroy_display(game->mlx);

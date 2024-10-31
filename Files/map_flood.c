@@ -35,7 +35,8 @@ void	flood_fill(t_flood_fill *flood, int columns, int rows)
 		printf("Out of bounds: x=%d, y=%d\n", columns, rows);
 		return ;
 	}
-	if (flood->map[rows][columns] == '1' || flood->visited[rows][columns])
+	if (flood->map[rows][columns] == '1' || flood->visited[rows][columns] ||
+		flood->map[rows][columns] == 'F')
 		return ;
 	flood->visited[rows][columns] = 1;
 	flood_fill(flood, columns + 1, rows);
@@ -58,7 +59,7 @@ void	free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
 		while (i < game->map.rows)
 			free(game->map.map[i++]);
 		free(game->map.map);
-		exit(1);
+		free_wrong_map(game);
 	}
 	else if (flag == 0)
 	{
