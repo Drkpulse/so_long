@@ -27,14 +27,23 @@ void	janitor(int error)
 		"Failed to allocate memory for collectibles",
 		"Memory allocation failed for visited.",
 	};
-
-	if (error >= 1 && error <= 11)
+	if (error >= 3 && error <= 11)
 		printf("%s\n", messages[error - 1]);
 	else
 		printf("Unknown error\n");
 	exit(EXIT_FAILURE);
 }
 
+void	free_mlx(t_game *game)
+{
+	printf("Invalid Map File\n");
+	if (game->mlx)
+	{
+		mlx_destroy_display(game->mlx);
+		free(game->mlx);
+	}
+	exit(EXIT_FAILURE);
+}
 void	free_list(t_list *lst)
 {
 	t_list	*tmp;
@@ -74,11 +83,7 @@ void	ft_leave(t_game *game)
 	free_enemies(game);
 	mlx_clear_window(game->mlx, game->win);
 	mlx_destroy_window(game->mlx, game->win);
-	if (game->mlx)
-	{
-		mlx_destroy_display(game->mlx);
-		free(game->mlx);
-	}
+
 }
 
 void	free_sprites(t_game *game, void **sprites, int count)

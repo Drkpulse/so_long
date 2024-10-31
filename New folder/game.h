@@ -167,8 +167,8 @@ void	update_player_position(t_game *game, int next_x, int next_y);
 void	ft_player(t_game *game);
 void	calculate_next_position(t_game *game, int *next_x, int *next_y);
 
-void	check_surroundings(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2);
-int		is_collision(t_game *game, int map_x1, int map_y1, int map_x2, int map_y2);
+void	check_surroundings(t_game *game, t_hitbox hitbox);
+int		is_collision(t_game *game, t_hitbox hitbox);
 
 void	check_collectible(t_game *game, int map_x, int map_y);
 void	check_exit(t_game *game, int map_x, int map_y);
@@ -205,5 +205,6 @@ void	free_map(char **map, int rows);
 void	free_sprites(t_game *game, void **sprites, int count);
 void	free_collectibles(t_game *game);
 void	free_enemies(t_game *game);
+void	free_mlx(t_game *game);
 
 #endif

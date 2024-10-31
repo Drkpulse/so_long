@@ -14,10 +14,11 @@
 
 int	ft_validate_map(int argc, char **argv, t_game *game)
 {
+	(void)argv;
 	if (argc != 2)
-		janitor(1);
+		free_mlx(game);
 	if (open_map(argv[1], game))
-		janitor(2);
+		free_mlx(game);
 	if (map_to_lst(game))
 		janitor(3);
 	if (map_to_two_d(game))
@@ -96,7 +97,7 @@ int	map_to_two_d(t_game *game)
 		current = current->next;
 	}
 	free_list(game->map.lst_map);
-	game->map.columns = ft_strlen(game->map.map[0]) - 1;
+	game->map.columns = ft_strlen(game->map.map[0]) - 2;
 	if (game->map.columns < 4)
 		return (1);
 	return (0);
