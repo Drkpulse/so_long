@@ -12,16 +12,6 @@
 
 #include "game.h"
 
-void print_visited(t_flood_fill *f)
-{
-	for (int i = 0; i < f->rows; i++) {
-		for (int j = 0; j < f->columns; j++) {
-			printf("%d ", f->visited[i][j]);
-		}
-		printf("\n");
-	}
-}
-
 void	flood_fill(t_flood_fill *flood, int columns, int rows)
 {
 	if (flood->map == NULL || flood->visited == NULL)
@@ -132,7 +122,6 @@ int	map_possible(t_game *game)
 	flood.map = game->map.map;
 	init_visited(&flood);
 	flood_fill(&flood, game->map.start_x, game->map.start_y);
-	print_visited(&flood);
 	if (flood.visited[game->map.start_y][game->map.start_x] == 0)
 	{
 		ft_printf("Error\nPlayer 'P' is either surrounded \

@@ -40,3 +40,23 @@ void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 		i++;
 	}
 }
+
+void	ft_leave(t_game *game)
+{
+	game->start = 0;
+	free_map(game->map.map, game->map.rows);
+	free_sprites(game, game->player.sprites, 11);
+	free_sprites(game, game->map.collectible_sprite, 11);
+	free_sprites(game, game->map.window_sprite, 11);
+	free_sprites(game, game->map.portal_sprites, 9);
+	free_sprites(game, game->map.enemies_sprite, 8);
+	free_collectibles(game);
+	free_enemies(game);
+	mlx_clear_window(game->mlx, game->win);
+	mlx_destroy_window(game->mlx, game->win);
+	if (game->mlx)
+	{
+		mlx_destroy_display(game->mlx);
+		free(game->mlx);
+	}
+}

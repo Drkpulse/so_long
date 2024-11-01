@@ -26,18 +26,15 @@ void	check_surroundings(t_game *game, t_hitbox hitbox)
 	check_collectible(game, hitbox.map_x2, hitbox.map_y1);
 	check_collectible(game, hitbox.map_x1, hitbox.map_y2);
 	check_collectible(game, hitbox.map_x2, hitbox.map_y2);
-
 	check_exit(game, hitbox.map_x1, hitbox.map_y1);
 	check_exit(game, hitbox.map_x2, hitbox.map_y1);
 	check_exit(game, hitbox.map_x1, hitbox.map_y2);
 	check_exit(game, hitbox.map_x2, hitbox.map_y2);
-
 	check_enemy(game, hitbox.map_x1, hitbox.map_y1);
 	check_enemy(game, hitbox.map_x2, hitbox.map_y1);
 	check_enemy(game, hitbox.map_x1, hitbox.map_y2);
 	check_enemy(game, hitbox.map_x2, hitbox.map_y2);
 }
-
 
 void	check_collectible(t_game *game, int map_x, int map_y)
 {
@@ -65,7 +62,8 @@ void	check_enemy(t_game *game, int map_x, int map_y)
 	if (game->map.map[map_y][map_x] == 'F')
 	{
 		ft_printf("You Burned\n");
-		ft_printf("Collected %d of %d\n", game->map.n_collected, game->map.n_collectible);
+		ft_printf("Collected %d of %d\n", game->map.n_collected, \
+		game->map.n_collectible);
 		close_window (game);
 	}
 }

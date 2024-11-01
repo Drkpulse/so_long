@@ -33,23 +33,19 @@ void	ft_player(t_game *game)
 	t_hitbox	hitbox;
 
 	calculate_next_position(game, &next_x, &next_y);
-
 	hitbox.map_x1 = next_x / PIXEL;
 	hitbox.map_y1 = next_y / PIXEL;
 	hitbox.map_x2 = (next_x + PIXEL - 1) / PIXEL;
 	hitbox.map_y2 = (next_y + PIXEL - 1) / PIXEL;
-
 	if (!is_collision(game, hitbox))
 	{
 		check_surroundings(game, hitbox);
 		update_player_position(game, next_x, next_y);
 	}
-
 	mlx_put_image_to_window(game->mlx, game->win,
 		game->player.sprites[game->player.move_sprite_index],
 		game->player.pos_x, game->player.pos_y);
 }
-
 
 void	update_player_position(t_game *game, int next_x, int next_y)
 {

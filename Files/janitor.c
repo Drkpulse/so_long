@@ -16,7 +16,7 @@ void	janitor(int error)
 {
 	const char	*messages[] = {
 		"Invalid Arguments",
-		"Invalid Map File",
+		"Invalid Map",
 		"map_to_lst",
 		"map_to_two_d",
 		"map_size",
@@ -27,7 +27,8 @@ void	janitor(int error)
 		"Failed to allocate memory for collectibles",
 		"Memory allocation failed for visited.",
 	};
-	if (error >= 3 && error <= 11)
+
+	if (error >= 1 && error <= 11)
 		printf("%s\n", messages[error - 1]);
 	else
 		printf("Unknown error\n");
@@ -36,14 +37,14 @@ void	janitor(int error)
 
 void	free_wrong_map(t_game *game)
 {
-	printf("Invalid Map\n");
 	if (game->mlx)
 	{
 		mlx_destroy_display(game->mlx);
 		free(game->mlx);
 	}
-	exit(EXIT_FAILURE);
+	janitor(2);
 }
+
 void	free_list(t_list *lst)
 {
 	t_list	*tmp;
@@ -68,26 +69,6 @@ void	free_map(char **map, int rows)
 		i++;
 	}
 	free(map);
-}
-
-void	ft_leave(t_game *game)
-{
-	game->start = 0;
-	free_map(game->map.map, game->map.rows);
-	free_sprites(game, game->player.sprites, 11);
-	free_sprites(game, game->map.collectible_sprite, 11);
-	free_sprites(game, game->map.window_sprite, 11);
-	free_sprites(game, game->map.portal_sprites, 9);
-	free_sprites(game, game->map.enemies_sprite, 8);
-	free_collectibles(game);
-	free_enemies(game);
-	mlx_clear_window(game->mlx, game->win);
-	mlx_destroy_window(game->mlx, game->win);
-	if (game->mlx)
-	{
-		mlx_destroy_display(game->mlx);
-		free(game->mlx);
-	}
 }
 
 void	free_sprites(t_game *game, void **sprites, int count)
