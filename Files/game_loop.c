@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:51:53 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:29:37 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 18:05:25 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int	game_loop(t_game *game)
 	{
 		mlx_clear_window(game->mlx, game->win);
 		fill_map(game->mlx, game->win, game->map);
-		ft_collectible(game, now);
-		ft_exit(game, now);
+		ft_collectible(game);
+		ft_up_exit(game);
 		ft_player(game);
 		game->last_millitimestamp = now;
 	}
@@ -49,27 +49,10 @@ void	ft_up_exit(t_game *game)
 				game->map.portal_sprites[0], j * PIXEL, i * PIXEL);
 			else if (game->map.map[i][j] == 'E' && end == 0)
 				mlx_put_image_to_window(game->mlx, game->win, \
-				game->map.portal_sprites[game->map.n_portal] \
+				game->map.portal_sprites[7] \
 				, j * PIXEL, i * PIXEL);
 			j++;
 		}
 		i++;
 	}
-}
-
-void	ft_exit(t_game *game, long long now)
-{
-	static long long	last_portal_update = 0;
-	long long			diff_millisecs;
-
-	diff_millisecs = now - last_portal_update;
-	if (diff_millisecs > 150)
-	{
-		if (game->map.n_portal < 7)
-			game->map.n_portal++;
-		else
-			game->map.n_portal = 0;
-		last_portal_update = now;
-	}
-	ft_up_exit(game);
 }

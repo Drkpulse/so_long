@@ -6,33 +6,27 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:51:34 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:25:53 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 18:32:14 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "game.h"
 
-void	ft_collectible(t_game *game, long long now)
+void	ft_collectible(t_game *game)
 {
 	int					i;
 	t_collectible		*collectible;
-	static long long	last_collectible_update = 0;
-	long long			diff_millisecs;
 
-	diff_millisecs = now - last_collectible_update;
 	i = 0;
 	while (i < game->map.n_collectible)
 	{
 		collectible = game->map.collectibles[i];
 		if (!collectible->collected)
 			mlx_put_image_to_window(game->mlx, game->win, \
-			game->map.collectible_sprite[collectible->frame], \
+			game->map.collectible_sprite[0], \
 			collectible->pos_x * PIXEL, collectible->pos_y * PIXEL);
-		collectible->frame = 0;
 		i++;
 	}
-	if (diff_millisecs > 120)
-		last_collectible_update = now;
 }
 
 void	ft_collect(t_game *game, int rows, int columns)

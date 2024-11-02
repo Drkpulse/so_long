@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:07 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:24:50 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:57:43 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	ft_init_sprite(t_game *game)
 {
 	if (ft_load_sprite(game, 11, 1, "assets/map/floor"))
 		return (1);
-	if (ft_load_sprite(game, 1, 2, "assets/exit/exit"))
+	if (ft_load_sprite(game, 9, 2, "assets/exit/exit"))
 		return (1);
 	if (ft_load_sprite(game, 1, 3, "assets/character/char"))
 		return (1);

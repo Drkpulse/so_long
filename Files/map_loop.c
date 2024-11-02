@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:13 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:13:55 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 18:07:19 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,11 @@ void	ft_leave(t_game *game)
 {
 	game->start = 0;
 	free_map(game->map.map, game->map.rows);
-	free_sprites(game, game->player.sprites, 11);
-	free_sprites(game, game->map.collectible_sprite, 11);
+	free_sprites(game, game->player.sprites, 1);
+	free_sprites(game, game->map.collectible_sprite, 1);
 	free_sprites(game, game->map.window_sprite, 11);
 	free_sprites(game, game->map.portal_sprites, 9);
 	free_collectibles(game);
-	free_enemies(game);
 	mlx_clear_window(game->mlx, game->win);
 	mlx_destroy_window(game->mlx, game->win);
 	if (game->mlx)
