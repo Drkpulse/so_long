@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:11 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:30:14 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 20:17:21 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	flood_fill(t_flood_fill *flood, int columns, int rows)
 		printf("Out of bounds: x=%d, y=%d\n", columns, rows);
 		return ;
 	}
-	if (flood->map[rows][columns] == '1' || flood->visited[rows][columns])
+	if (flood->map[rows][columns] == '1' || flood->visited[rows][columns] ||
+		flood->map[rows][columns] == 'F')
 		return ;
 	flood->visited[rows][columns] = 1;
 	flood_fill(flood, columns + 1, rows);

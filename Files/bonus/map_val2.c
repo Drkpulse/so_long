@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:20 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:12:06 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:04:55 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	check_char(t_game *game)
 		{
 			if (game->map.map[i][j] != '0' && game->map.map[i][j] != 'P' &&
 				game->map.map[i][j] != 'C' && game->map.map[i][j] != 'E' &&
-				game->map.map[i][j] != '1')
+				game->map.map[i][j] != '1' && game->map.map[i][j] != 'F')
 			{
 				ft_printf("Invalid character at [%d][%d]: %c\n"\
 					, i, j, game->map.map[i][j]);
@@ -104,6 +104,7 @@ int	count_map_chars(t_game *game)
 	p_start = count_char(game, 'P');
 	exit = count_char(game, 'E');
 	game->map.n_collectible = count_char(game, 'C');
+	game->map.n_enemies = count_char(game, 'F');
 	if (p_start != 1 || exit != 1 || game->map.n_collectible < 1)
 	{
 		free_map(game->map.map, game->map.rows);

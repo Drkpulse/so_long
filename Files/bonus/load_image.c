@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:07 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:24:50 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:11:20 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ void	load_xpm_sprite(t_game *game, int i, int sprite_type, char *sprite_path)
 		sprite_path, &pixel, &pixel);
 	if (sprite_type == 4)
 		game->map.collectible_sprite[i] = mlx_xpm_file_to_image(game->mlx, \
+		sprite_path, &pixel, &pixel);
+	if (sprite_type == 5)
+		game->map.enemies_sprite[i] = mlx_xpm_file_to_image(game->mlx, \
 		sprite_path, &pixel, &pixel);
 }
 
@@ -59,11 +62,13 @@ int	ft_init_sprite(t_game *game)
 {
 	if (ft_load_sprite(game, 11, 1, "assets/map/floor"))
 		return (1);
-	if (ft_load_sprite(game, 1, 2, "assets/exit/exit"))
+	if (ft_load_sprite(game, 9, 2, "assets/exit/exit"))
 		return (1);
-	if (ft_load_sprite(game, 1, 3, "assets/character/char"))
+	if (ft_load_sprite(game, 11, 3, "assets/character/char"))
 		return (1);
-	if (ft_load_sprite(game, 1, 4, "assets/collect/coin"))
+	if (ft_load_sprite(game, 11, 4, "assets/collect/coin"))
+		return (1);
+	if (ft_load_sprite(game, 8, 5, "assets/enemy/fire"))
 		return (1);
 	return (0);
 }

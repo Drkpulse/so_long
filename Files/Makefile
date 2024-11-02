@@ -1,6 +1,6 @@
 NAME		= so_long
 
-SRC		= main.c game_init.c map_val.c map_val2.c janitor.c input.c load_image.c player.c game_loop.c debug.c map_loop.c collectibles.c player_env.c enemies.c map_flood.c
+SRC		= main.c game_init.c map_val.c map_val2.c janitor.c input.c load_image.c player.c game_loop.c debug.c map_loop.c collectibles.c player_env.c map_flood.c
 
 OBJ_DIR = obj
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))

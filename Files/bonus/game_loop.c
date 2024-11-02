@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:51:53 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:29:37 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:27:15 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	game_loop(t_game *game)
 		fill_map(game->mlx, game->win, game->map);
 		ft_collectible(game, now);
 		ft_exit(game, now);
+		sprite_player_up(game, now);
 		ft_player(game);
 		game->last_millitimestamp = now;
 	}

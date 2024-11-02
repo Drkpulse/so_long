@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:24 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:26:50 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:27:02 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	ft_player(t_game *game)
 		update_player_position(game, next_x, next_y);
 	}
 	mlx_put_image_to_window(game->mlx, game->win,
-		game->player.sprites[game->player.move_sprite_index],
+		game->player.sprites[0],
 		game->player.pos_x, game->player.pos_y);
 }
 
@@ -70,4 +70,28 @@ void	calculate_next_position(t_game *game, int *next_x, int *next_y)
 		*next_x -= MOVE_SPEED;
 	if (game->player.move_right)
 		*next_x += MOVE_SPEED;
+}
+
+void	sprite_player_up(t_game *game, long long now)
+{
+	static long long	last_player_update;
+	long long			diff_millisecs;
+
+	diff_millisecs = now - last_player_update;
+	last_player_update = 0;
+	if (diff_millisecs > 120)
+	{
+		if (game->player.move_up || game->player.move_down \
+			|| game->player.move_left || game->player.move_right)
+			if (game->player.move_sprite_index < 10)
+				game->player.move_sprite_index++;
+		else
+			game->player.move_sprite_index = 3;
+		else
+			if (game->player.move_sprite_index < 2)
+				game->player.move_sprite_index++;
+		else
+			game->player.move_sprite_index = 0;
+		last_player_update = now;
+	}
 }

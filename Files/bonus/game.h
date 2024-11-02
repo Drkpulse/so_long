@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:51:56 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:28:55 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 20:33:56 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,13 @@ typedef struct s_player
 	void	*sprites[23];
 }			t_player;
 
+typedef struct s_enemy
+{
+	int		pos_x;
+	int		pos_y;
+	int		frame;
+}			t_enemy;
+
 typedef struct s_collectible
 {
 	int		pos_x;
@@ -104,6 +111,8 @@ typedef struct s_map
 	int				n_collected;
 	t_collectible	**collectibles;
 	void			*collectible_sprite[11];
+	t_enemy			**enemies;
+	void			*enemies_sprite[8];
 	void			*window_sprite[11];
 	int				n_portal;
 	void			*portal_sprites[9];
@@ -145,6 +154,7 @@ int				close_window(t_game *game);
 
 /* Sprite */
 int				ft_init_sprite(t_game *game);
+void			sprite_player_up(t_game *game, long long now);
 
 /* Input */
 int				handle_keypress(int key, t_game *game);
@@ -170,6 +180,12 @@ void			ft_collect(t_game *game, int x, int y);
 void			ft_init_collectible(t_game *game);
 t_collectible	*ft_create_collectible(int w, int h);
 
+/* Enemies */
+void			init_enemies(t_game *game);
+void			ft_check_monsters(t_game *game);
+void			default_enemy(t_enemy *enemy, int w, int h);
+void			update_monsters(t_game *game, long long now);
+
 /* Game Loop*/
 int				game_loop(t_game *game);
 void			ft_exit(t_game *game, long long now);
@@ -177,6 +193,9 @@ void			fill_map(void *mlx_pointer, void *mlx_window, t_map mapa);
 
 /* Debug */
 long long		millitimestamp(void);
+void			show_fps(t_game *game);
+void			fps(t_game *game);
+void			show_steps(t_game *game);
 
 /* Clean up*/
 void			janitor(int error);
@@ -185,5 +204,6 @@ void			free_list(t_list *head);
 void			free_map(char **map, int rows);
 void			free_sprites(t_game *game, void **sprites, int count);
 void			free_collectibles(t_game *game);
+void			free_enemies(t_game *game);
 void			free_wrong_map(t_game *game);
 #endif

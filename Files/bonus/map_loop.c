@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:13 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:13:55 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/10/29 20:18:48 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ void	fill_map(void *mlx_pointer, void *mlx_window, t_map mapa)
 				mlx_put_image_to_window(mlx_pointer, mlx_window, \
 				mapa.window_sprite[10], j * pixel, i * pixel);
 			if (mapa.map[i][j] == '0' || mapa.map[i][j] == 'P' || \
-			mapa.map[i][j] == 'C' || mapa.map[i][j] == 'E')
+			mapa.map[i][j] == 'C' || mapa.map[i][j] == 'E' || \
+			mapa.map[i][j] == 'F')
 				mlx_put_image_to_window(mlx_pointer, mlx_window, \
 				mapa.window_sprite[tile_id], j * pixel, i * pixel);
 			j++;
@@ -48,6 +49,7 @@ void	ft_leave(t_game *game)
 	free_sprites(game, game->map.collectible_sprite, 11);
 	free_sprites(game, game->map.window_sprite, 11);
 	free_sprites(game, game->map.portal_sprites, 9);
+	free_sprites(game, game->map.enemies_sprite, 8);
 	free_collectibles(game);
 	free_enemies(game);
 	mlx_clear_window(game->mlx, game->win);
