@@ -6,11 +6,11 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:16 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 18:06:14 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/02 17:49:18 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "game.h"
+#include "b_game.h"
 
 int	ft_validate_map(int argc, char **argv, t_game *game)
 {
@@ -106,11 +106,6 @@ int	map_to_two_d(t_game *game)
 int	map_rectangle(t_game *game)
 {
 	if (game->map.rows == game->map.columns)
-	{
-		free_map(game->map.map, game->map.rows);
-		free_wrong_map(game);
 		return (1);
-	}
-
 	return (0);
 }
