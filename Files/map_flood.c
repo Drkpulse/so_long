@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:11 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:49:08 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:49:19 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	free_flood_mem(t_game *game, t_flood_fill *flood, int flag)
 		while (i < game->map.rows)
 			free(game->map.map[i++]);
 		free(game->map.map);
-		free_wrong_map(game);
+		free_wrong_map(game, 0);
 	}
 	else if (flag == 0)
 	{

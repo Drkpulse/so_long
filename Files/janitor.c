@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:04 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:48:48 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:49:15 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,15 @@ void	janitor(int error)
 	exit(EXIT_FAILURE);
 }
 
-void	free_wrong_map(t_game *game)
+void	free_wrong_map(t_game *game, int flag)
 {
 	if (game->mlx)
 	{
 		mlx_destroy_display(game->mlx);
 		free(game->mlx);
 	}
+	if (flag)
+		free_map(game->map.map, game->map.rows);
 	janitor(2);
 }
 

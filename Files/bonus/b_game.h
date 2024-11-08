@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   game.h                                             :+:      :+:    :+:   */
+/*   b_game.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:51:56 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/02 17:48:20 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:50:24 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GAME_H
-# define GAME_H
+#ifndef B_GAME_H
+# define B_GAME_H
 
 # include <X11/X.h>
 # include <X11/keysym.h>
@@ -205,5 +205,5 @@ void			free_map(char **map, int rows);
 void			free_sprites(t_game *game, void **sprites, int count);
 void			free_collectibles(t_game *game);
 void			free_enemies(t_game *game);
-void			free_wrong_map(t_game *game);
+void			free_wrong_map(t_game *game, int flag);
 #endif

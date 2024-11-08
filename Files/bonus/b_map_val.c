@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_val.c                                          :+:      :+:    :+:   */
+/*   b_map_val.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:16 by joseferr          #+#    #+#             */
-/*   Updated: 2024/10/29 20:20:10 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:51:03 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,23 @@ int	ft_validate_map(int argc, char **argv, t_game *game)
 {
 	(void)argv;
 	if (argc != 2)
-		free_wrong_map(game);
+		free_wrong_map(game, 0);
 	if (open_map(argv[1], game))
-		free_wrong_map(game);
+		free_wrong_map(game, 0);
 	if (map_to_lst(game))
-		janitor(3);
+		free_wrong_map(game, 1);
 	if (map_to_two_d(game))
-		janitor(4);
+		free_wrong_map(game, 1);
 	if (map_rectangle(game))
-		janitor(5);
+		free_wrong_map(game, 1);
 	if (check_char(game))
-		janitor(6);
+		free_wrong_map(game, 1);
 	if (surrounded(game))
-		janitor(7);
+		free_wrong_map(game, 1);
 	if (count_map_chars(game))
-		janitor(8);
+		free_wrong_map(game, 1);
 	if (map_possible(game))
-		janitor(8);
+		free_wrong_map(game, 1);
 	return (0);
 }
 
@@ -97,7 +97,7 @@ int	map_to_two_d(t_game *game)
 		current = current->next;
 	}
 	free_list(game->map.lst_map);
-	game->map.columns = ft_strlen(game->map.map[0]) - 2;
+	game->map.columns = ft_strlen(game->map.map[0]) - 1;
 	if (game->map.columns < 4)
 		return (1);
 	return (0);
@@ -106,6 +106,10 @@ int	map_to_two_d(t_game *game)
 int	map_rectangle(t_game *game)
 {
 	if (game->map.rows == game->map.columns)
+	{
+		free_map(game->map.map, game->map.rows);
+		free_wrong_map(game, 1);
 		return (1);
+	}
 	return (0);
 }
