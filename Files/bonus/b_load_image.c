@@ -60,15 +60,15 @@ int	ft_load_sprite(t_game *game, int n_sprt, int sprite_type, char *path)
 
 int	ft_init_sprite(t_game *game)
 {
-	if (ft_load_sprite(game, 11, 1, "../assets/map/floor"))
+	if (ft_load_sprite(game, 11, 1, "assets/map/floor"))
 		return (1);
-	if (ft_load_sprite(game, 9, 2, "../assets/exit/exit"))
+	if (ft_load_sprite(game, 9, 2, "assets/exit/exit"))
 		return (1);
-	if (ft_load_sprite(game, 11, 3, "../assets/character/char"))
+	if (ft_load_sprite(game, 11, 3, "assets/character/char"))
 		return (1);
-	if (ft_load_sprite(game, 11, 4, "../assets/collect/coin"))
+	if (ft_load_sprite(game, 11, 4, "assets/collect/coin"))
 		return (1);
-	if (ft_load_sprite(game, 8, 5, "../assets/enemy/fire"))
+	if (ft_load_sprite(game, 8, 5, "assets/enemy/fire"))
 		return (1);
 	return (0);
 }
