@@ -6,7 +6,7 @@
 /*   By: joseferr <joseferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 19:52:20 by joseferr          #+#    #+#             */
-/*   Updated: 2024/11/08 20:49:03 by joseferr         ###   ########.fr       */
+/*   Updated: 2024/11/08 22:06:16 by joseferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ int	surrounded(t_game *game)
 	printf("columns: %d, rows: %d\n", game->map.columns, game->map.rows);
 	while (i < game->map.columns - 1)
 	{
-		if (game->map.map[0][i] != '1' && game->map.map[game->map.rows - 1][i])
+		if (game->map.map[0][i] != '1' || game->map.map[game->map.rows - 1][i])
 			return (1);
 		i++;
 	}
 	i = 0;
 	while (i < game->map.rows - 1)
 	{
-		if (game->map.map[i][0] != '1' && game->map.map[i] \
+		if (game->map.map[i][0] != '1' || game->map.map[i] \
 			[game->map.columns - 1] != '1')
 			return (1);
 		i++;
